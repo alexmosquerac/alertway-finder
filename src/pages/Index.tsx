@@ -4,6 +4,7 @@ import MainLayout from "@/layouts/MainLayout";
 import Map from "@/components/Map";
 import SafetyAlert from "@/components/SafetyAlert";
 import ReportIncident from "@/components/ReportIncident";
+import MapboxToken from "@/components/MapboxToken";
 import { AlertTriangle, Bell } from "lucide-react";
 
 const Index = () => {
@@ -48,6 +49,9 @@ const Index = () => {
         isVisible={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
       />
+      
+      {/* Mapbox token input */}
+      <MapboxToken />
     </MainLayout>
   );
 };

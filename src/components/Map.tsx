@@ -1,36 +1,149 @@
 
 import { useRef, useEffect, useState } from "react";
-import { Search, Navigation, AlertTriangle, Shield, MapPin } from "lucide-react";
+import { Search, Navigation, AlertTriangle, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
-// This is a simulated map - in a real implementation, we would integrate with a map provider like Mapbox or Google Maps
+// Safety markers data (would come from API in real app)
+const safetyMarkers = [
+  { id: 1, coordinates: [-73.9712, 40.7831], level: 'safe', label: 'Central Park Area' },
+  { id: 2, coordinates: [-73.9862, 40.7580], level: 'caution', label: 'Times Square' },
+  { id: 3, coordinates: [-73.9787, 40.7425], level: 'danger', label: 'Midtown East' },
+  { id: 4, coordinates: [-73.9935, 40.7411], level: 'safe', label: 'Chelsea' },
+  { id: 5, coordinates: [-74.0060, 40.7314], level: 'caution', label: 'Greenwich Village' },
+];
+
 const Map = () => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [safetyLevel, setSafetyLevel] = useState<'safe' | 'caution' | 'danger' | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<typeof safetyMarkers[0] | null>(null);
   
-  // Simulate map loading
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMapLoaded(true);
-    }, 800);
+    // Get token from localStorage
+    const token = localStorage.getItem("mapbox_token");
+    if (!token || !mapContainer.current) return;
     
-    return () => clearTimeout(timer);
+    // Initialize Mapbox
+    mapboxgl.accessToken = token;
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/light-v11',
+      center: [-73.9865, 40.7535], // New York City
+      zoom: 12
+    });
+    
+    const mapInstance = map.current;
+    
+    // Add navigation controls
+    mapInstance.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    
+    // Handle map load
+    mapInstance.on('load', () => {
+      setMapLoaded(true);
+      
+      // Add markers when map is ready
+      safetyMarkers.forEach(marker => {
+        // Create marker element
+        const el = document.createElement('div');
+        el.className = `marker-${marker.level}`;
+        el.style.width = '30px';
+        el.style.height = '30px';
+        el.style.borderRadius = '50%';
+        el.style.cursor = 'pointer';
+        el.style.display = 'flex';
+        el.style.alignItems = 'center';
+        el.style.justifyContent = 'center';
+        
+        // Set background color based on safety level
+        el.style.backgroundColor = 
+          marker.level === 'safe' ? 'rgba(34, 197, 94, 0.2)' : 
+          marker.level === 'caution' ? 'rgba(245, 158, 11, 0.2)' : 
+          'rgba(239, 68, 68, 0.2)';
+
+        // Add icon based on safety level
+        const icon = document.createElement('span');
+        icon.innerHTML = 
+          marker.level === 'safe' 
+            ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(34, 197, 94)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' 
+            : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + (marker.level === 'caution' ? 'rgb(245, 158, 11)' : 'rgb(239, 68, 68)') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+        el.appendChild(icon);
+        
+        // Add click handler
+        el.addEventListener('click', () => {
+          setSelectedMarker(marker);
+          setSafetyLevel(marker.level as 'safe' | 'caution' | 'danger');
+        });
+        
+        // Add marker to map
+        new mapboxgl.Marker(el)
+          .setLngLat(marker.coordinates)
+          .addTo(mapInstance);
+      });
+    });
+    
+    // Get user location if available
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { longitude, latitude } = position.coords;
+          
+          // Add user location marker
+          const userEl = document.createElement('div');
+          userEl.className = 'user-location';
+          userEl.style.width = '20px';
+          userEl.style.height = '20px';
+          userEl.style.borderRadius = '50%';
+          userEl.style.backgroundColor = '#3b82f6';
+          userEl.style.border = '2px solid white';
+          userEl.style.boxShadow = '0 0 0 2px rgba(59, 130, 246, 0.5)';
+          
+          new mapboxgl.Marker(userEl)
+            .setLngLat([longitude, latitude])
+            .addTo(mapInstance);
+            
+          // Center map on user location
+          mapInstance.flyTo({
+            center: [longitude, latitude],
+            zoom: 14,
+            speed: 1.5
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+        }
+      );
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      mapInstance.remove();
+    };
   }, []);
   
-  // Areas with different safety ratings (simulated data)
-  const safetyMarkers = [
-    { id: 1, lat: 30, lng: 20, level: 'safe', label: 'Central Park Area' },
-    { id: 2, lat: 35, lng: 15, level: 'caution', label: 'Downtown District' },
-    { id: 3, lat: 40, lng: 25, level: 'danger', label: 'Industrial Zone' },
-    { id: 4, lat: 32, lng: 22, level: 'safe', label: 'University Campus' },
-    { id: 5, lat: 38, lng: 18, level: 'caution', label: 'Main Street' },
-  ];
-  
-  // Mock function to handle area click
-  const handleAreaClick = (level: 'safe' | 'caution' | 'danger') => {
-    setSafetyLevel(level);
+  // Handle current location button click
+  const goToUserLocation = () => {
+    if (!map.current) return;
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { longitude, latitude } = position.coords;
+          map.current?.flyTo({
+            center: [longitude, latitude],
+            zoom: 15,
+            speed: 1.5
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+        }
+      );
+    }
   };
   
   return (
@@ -59,68 +172,15 @@ const Map = () => {
       
       {/* Map container */}
       <div 
-        ref={mapRef} 
-        className={cn(
-          "map-container bg-blue-50 transition-opacity duration-700",
-          isMapLoaded ? "opacity-100" : "opacity-0"
-        )}
-      >
-        {/* Simulated map - would be replaced with an actual map implementation */}
-        <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v11/static/0,0,1,0/1200x800?access_token=pk.mock')] bg-center bg-no-repeat bg-cover">
-          {/* Map overlay for visual effect */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/5"></div>
-        </div>
-        
-        {/* Simulated markers */}
-        {isMapLoaded && safetyMarkers.map((marker) => (
-          <button
-            key={marker.id}
-            className={cn(
-              "absolute z-10 transform -translate-x-1/2 -translate-y-1/2 animate-fade-in group",
-              marker.level === 'safe' ? "text-safety-safe" : 
-              marker.level === 'caution' ? "text-safety-caution" : 
-              "text-safety-danger"
-            )}
-            style={{ 
-              left: `${marker.lat}%`, 
-              top: `${marker.lng}%`,
-              animationDelay: `${marker.id * 100}ms`
-            }}
-            onClick={() => handleAreaClick(marker.level as 'safe' | 'caution' | 'danger')}
-          >
-            <div className={cn(
-              "flex items-center justify-center w-10 h-10 rounded-full",
-              marker.level === 'safe' ? "bg-safety-safe/20" : 
-              marker.level === 'caution' ? "bg-safety-caution/20" : 
-              "bg-safety-danger/20",
-              "transition-transform duration-300 group-hover:scale-110"
-            )}>
-              {marker.level === 'safe' ? (
-                <Shield className="w-5 h-5" />
-              ) : marker.level === 'caution' ? (
-                <AlertTriangle className="w-5 h-5" />
-              ) : (
-                <AlertTriangle className="w-5 h-5" />
-              )}
-            </div>
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <div className={cn(
-                "whitespace-nowrap text-xs font-medium py-1 px-2 rounded-md shadow-elevation-low",
-                marker.level === 'safe' ? "bg-safety-safe text-white" : 
-                marker.level === 'caution' ? "bg-safety-caution text-white" : 
-                "bg-safety-danger text-white"
-              )}>
-                {marker.label}
-              </div>
-            </div>
-          </button>
-        ))}
-      </div>
+        ref={mapContainer} 
+        className="absolute inset-0 bg-muted"
+      ></div>
       
       {/* Current location button */}
       <button 
         className="action-button absolute bottom-28 right-4 bg-white text-primary"
         aria-label="Current location"
+        onClick={goToUserLocation}
       >
         <Navigation className="w-5 h-5" />
       </button>
@@ -134,7 +194,7 @@ const Map = () => {
       </button>
       
       {/* Safety information panel */}
-      {safetyLevel && (
+      {safetyLevel && selectedMarker && (
         <div className="absolute bottom-20 left-4 right-4 glass-panel p-4 rounded-xl animate-fade-in-up">
           <div className="flex items-start">
             <div className={cn(
@@ -145,8 +205,6 @@ const Map = () => {
             )}>
               {safetyLevel === 'safe' ? (
                 <Shield className="w-5 h-5" />
-              ) : safetyLevel === 'caution' ? (
-                <AlertTriangle className="w-5 h-5" />
               ) : (
                 <AlertTriangle className="w-5 h-5" />
               )}
@@ -154,9 +212,7 @@ const Map = () => {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold">
-                  {safetyLevel === 'safe' ? 'Safe Area' : 
-                   safetyLevel === 'caution' ? 'Exercise Caution' : 
-                   'Potential Danger'}
+                  {selectedMarker.label}
                 </h3>
                 <button 
                   className="text-muted-foreground hover:text-foreground"
