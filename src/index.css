@@ -1,92 +1,44 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 210 20% 98%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 210 100% 50%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 1rem;
+    
+    --safety-safe: 142 76% 45%;
+    --safety-caution: 38 92% 50%;
+    --safety-danger: 0 84% 60%;
+    --safety-info: 199 89% 48%;
+    
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 221.2 83.2% 53.3%;
   }
 }
 
@@ -95,7 +47,94 @@
     @apply border-border;
   }
 
+  html, body, #root {
+    @apply h-full w-full overflow-x-hidden;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full transition-colors;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/40;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply backdrop-blur-lg bg-white/70 border border-white/20 shadow-glass;
+  }
+  
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .safety-indicator {
+    @apply inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium rounded-full;
+  }
+  
+  .safety-indicator.safe {
+    @apply bg-safety-safe/10 text-safety-safe border border-safety-safe/20;
+  }
+  
+  .safety-indicator.caution {
+    @apply bg-safety-caution/10 text-safety-caution border border-safety-caution/20;
+  }
+  
+  .safety-indicator.danger {
+    @apply bg-safety-danger/10 text-safety-danger border border-safety-danger/20;
+  }
+  
+  .safety-indicator.info {
+    @apply bg-safety-info/10 text-safety-info border border-safety-info/20;
+  }
+  
+  .page-transition-enter {
+    @apply animate-fade-in-up;
+  }
+  
+  .map-container {
+    @apply h-full w-full rounded-2xl overflow-hidden shadow-elevation-medium;
+  }
+  
+  .bottom-sheet {
+    @apply fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg rounded-t-3xl p-5 z-10 shadow-elevation-high border-t border-border/50 transform transition-transform duration-300 ease-out;
+  }
+  
+  .bottom-sheet-handle {
+    @apply w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4;
+  }
+  
+  .action-button {
+    @apply flex items-center justify-center w-12 h-12 rounded-full shadow-elevation-medium bg-primary text-primary-foreground transition-transform hover:scale-105 active:scale-95;
+  }
+  
+  .slide-up {
+    animation: slide-up 0.3s ease-out forwards;
+  }
+  
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 }
