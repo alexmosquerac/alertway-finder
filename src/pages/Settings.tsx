@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import MainLayout from "@/layouts/MainLayout";
-import { Bell, Shield, Map, User, ChevronRight, Toggle, Lock } from "lucide-react";
+import { Bell, Shield, Map, User, ChevronRight, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Settings = () => {
