@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import MainLayout from "@/layouts/MainLayout";
 import { Bell, Shield, Map, User, ChevronRight, Lock } from "lucide-react";
@@ -23,37 +24,37 @@ const Settings = () => {
   const settingSections = [
     {
       id: "account",
-      title: "Account",
+      title: "Cuenta",
       icon: User,
       color: "bg-primary/10 text-primary",
       items: [
-        { id: "profile", label: "Your Profile", action: "navigate" },
-        { id: "privacy", label: "Privacy Settings", action: "navigate" },
-        { id: "security", label: "Security", action: "navigate" }
+        { id: "profile", label: "Tu Perfil", action: "navigate" },
+        { id: "privacy", label: "Configuración de Privacidad", action: "navigate" },
+        { id: "security", label: "Seguridad", action: "navigate" }
       ]
     },
     {
       id: "notifications",
-      title: "Notifications",
+      title: "Notificaciones",
       icon: Bell,
       color: "bg-amber-100 text-amber-600",
       items: [
         { 
           id: "notifications", 
-          label: "Enable Notifications", 
+          label: "Activar Notificaciones", 
           action: "toggle",
           value: settings.notifications
         },
         { 
           id: "safetyAlerts", 
-          label: "Safety Alerts", 
+          label: "Alertas de Seguridad", 
           action: "toggle",
           value: settings.safetyAlerts,
           disabled: !settings.notifications
         },
         { 
           id: "incidentAlerts", 
-          label: "Incident Reports", 
+          label: "Reportes de Incidentes", 
           action: "toggle",
           value: settings.incidentAlerts,
           disabled: !settings.notifications
@@ -62,25 +63,25 @@ const Settings = () => {
     },
     {
       id: "privacy",
-      title: "Privacy & Data",
+      title: "Privacidad y Datos",
       icon: Lock,
       color: "bg-purple-100 text-purple-600",
       items: [
         { 
           id: "location", 
-          label: "Location Services", 
+          label: "Servicios de Ubicación", 
           action: "toggle",
           value: settings.location
         },
         { 
           id: "dataSharing", 
-          label: "Anonymous Data Sharing", 
+          label: "Compartir Datos Anónimos", 
           action: "toggle",
           value: settings.dataSharing
         },
         { 
           id: "dataDeletion", 
-          label: "Delete My Data", 
+          label: "Eliminar Mis Datos", 
           action: "navigate",
           danger: true
         }
@@ -88,29 +89,29 @@ const Settings = () => {
     },
     {
       id: "appearance",
-      title: "Appearance",
+      title: "Apariencia",
       icon: Map,
       color: "bg-green-100 text-green-600",
       items: [
         { 
           id: "darkMode", 
-          label: "Dark Mode", 
+          label: "Modo Oscuro", 
           action: "toggle",
           value: settings.darkMode
         },
-        { id: "mapStyle", label: "Map Style", action: "navigate" }
+        { id: "mapStyle", label: "Estilo del Mapa", action: "navigate" }
       ]
     },
     {
       id: "about",
-      title: "About",
+      title: "Acerca de",
       icon: Shield,
       color: "bg-blue-100 text-blue-600",
       items: [
-        { id: "help", label: "Help & Support", action: "navigate" },
-        { id: "privacy", label: "Privacy Policy", action: "navigate" },
-        { id: "terms", label: "Terms of Service", action: "navigate" },
-        { id: "about", label: "About SafePath", action: "navigate" }
+        { id: "help", label: "Ayuda y Soporte", action: "navigate" },
+        { id: "privacy", label: "Política de Privacidad", action: "navigate" },
+        { id: "terms", label: "Términos de Servicio", action: "navigate" },
+        { id: "about", label: "Acerca de CaminoSeguro", action: "navigate" }
       ]
     }
   ];
@@ -118,7 +119,7 @@ const Settings = () => {
   return (
     <MainLayout>
       <div className="p-4 h-full flex flex-col">
-        <h1 className="text-2xl font-semibold mb-6">Settings</h1>
+        <h1 className="text-2xl font-semibold mb-6">Configuración</h1>
         
         <div className="flex-1 overflow-auto">
           <div className="space-y-6">
@@ -175,8 +176,8 @@ const Settings = () => {
             ))}
             
             <div className="py-6 text-center text-xs text-muted-foreground">
-              <p>SafePath Version 1.0.0</p>
-              <p className="mt-1">© 2023 SafePath Technologies Inc.</p>
+              <p>CaminoSeguro Versión 1.0.0</p>
+              <p className="mt-1">© 2024 CaminoSeguro Technologies Inc.</p>
             </div>
           </div>
         </div>

@@ -4,7 +4,6 @@ import MainLayout from "@/layouts/MainLayout";
 import Map from "@/components/Map";
 import SafetyAlert from "@/components/SafetyAlert";
 import ReportIncident from "@/components/ReportIncident";
-import MapboxToken from "@/components/MapboxToken";
 import { AlertTriangle, Bell } from "lucide-react";
 
 const Index = () => {
@@ -14,28 +13,28 @@ const Index = () => {
   return (
     <MainLayout>
       <div className="h-full flex flex-col">
-        {/* Safety alerts banner */}
+        {/* Banner de alertas de seguridad */}
         <div className="px-4 py-3 bg-safety-info/10 flex items-center justify-between animate-fade-in">
           <div className="flex items-center">
             <Bell className="w-5 h-5 text-safety-info mr-2" />
-            <span className="text-sm font-medium">Safety alerts enabled for your area</span>
+            <span className="text-sm font-medium">Alertas de seguridad activadas para tu zona</span>
           </div>
           <button className="text-xs font-medium text-primary">
-            Settings
+            Configuración
           </button>
         </div>
         
-        {/* Main map view */}
+        {/* Vista principal del mapa */}
         <div className="flex-1 relative">
           <Map />
           
-          {/* Emergency button */}
+          {/* Botón de emergencia */}
           <button
             onClick={() => setIsAlertModalOpen(true)}
             className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-destructive text-white px-6 py-3 rounded-full font-medium shadow-elevation-medium flex items-center animate-pulse-subtle"
           >
             <AlertTriangle className="w-5 h-5 mr-2" />
-            Emergency Alert
+            Alerta de Emergencia
           </button>
         </div>
       </div>
@@ -49,9 +48,6 @@ const Index = () => {
         isVisible={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
       />
-      
-      {/* Mapbox token input */}
-      <MapboxToken />
     </MainLayout>
   );
 };

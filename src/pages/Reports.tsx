@@ -9,41 +9,41 @@ const Reports = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [filter, setFilter] = useState("all");
   
-  // Simulated incident reports
+  // Reportes de incidentes simulados
   const reports = [
     {
       id: 1,
       type: "theft",
-      description: "Reported theft of a bicycle that was locked outside the coffee shop.",
-      time: "2 hours ago",
-      location: "Main Street & 5th Avenue",
+      description: "Robo reportado de una bicicleta que estaba aparcada fuera de la cafetería.",
+      time: "Hace 2 horas",
+      location: "Calle Gran Vía & Calle Alcalá",
       severity: "medium",
       verified: true
     },
     {
       id: 2,
       type: "suspicious",
-      description: "Suspicious person loitering around the park entrance for over an hour.",
-      time: "Yesterday",
-      location: "Central Park, East Entrance",
+      description: "Persona sospechosa merodeando cerca de la entrada del parque durante más de una hora.",
+      time: "Ayer",
+      location: "Parque del Retiro, Entrada Este",
       severity: "low",
       verified: false
     },
     {
       id: 3,
       type: "harassment",
-      description: "Verbal harassment reported near the bus station. Exercise caution in this area.",
-      time: "Yesterday",
-      location: "Downtown Transit Center",
+      description: "Acoso verbal reportado cerca de la estación de autobuses. Tener precaución en esta zona.",
+      time: "Ayer",
+      location: "Estación de Atocha",
       severity: "high",
       verified: true
     },
     {
       id: 4,
       type: "vandalism",
-      description: "Multiple cars with broken windows reported in overnight incident.",
-      time: "2 days ago",
-      location: "Oak Street Parking Lot",
+      description: "Múltiples coches con ventanas rotas reportados en incidente nocturno.",
+      time: "Hace 2 días",
+      location: "Aparcamiento Calle Serrano",
       severity: "medium",
       verified: true
     }
@@ -85,17 +85,45 @@ const Reports = () => {
     }
   };
   
+  const getSeverityText = (severity: string) => {
+    switch (severity) {
+      case "high":
+        return "Alto";
+      case "medium":
+        return "Medio";
+      case "low":
+        return "Bajo";
+      default:
+        return "Bajo";
+    }
+  };
+  
+  const getTypeText = (type: string) => {
+    switch (type) {
+      case "theft":
+        return "Robo";
+      case "suspicious":
+        return "Sospechoso";
+      case "harassment":
+        return "Acoso";
+      case "vandalism":
+        return "Vandalismo";
+      default:
+        return type;
+    }
+  };
+  
   return (
     <MainLayout>
       <div className="p-4 h-full flex flex-col">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold">Incident Reports</h1>
+          <h1 className="text-2xl font-semibold">Reportes de Incidentes</h1>
           <button
             onClick={() => setIsReportModalOpen(true)}
             className="flex items-center bg-primary text-primary-foreground px-3 py-2 rounded-lg text-sm font-medium"
           >
             <Plus className="w-4 h-4 mr-1" />
-            Report
+            Reportar
           </button>
         </div>
         
@@ -110,7 +138,7 @@ const Reports = () => {
                   : "bg-secondary text-secondary-foreground"
               )}
             >
-              All Reports
+              Todos los Reportes
             </button>
             <button
               onClick={() => setFilter("verified")}
@@ -121,7 +149,7 @@ const Reports = () => {
                   : "bg-secondary text-secondary-foreground"
               )}
             >
-              Verified Only
+              Solo Verificados
             </button>
             <button
               onClick={() => setFilter("high")}
@@ -132,7 +160,7 @@ const Reports = () => {
                   : "bg-secondary text-secondary-foreground"
               )}
             >
-              High Severity
+              Gravedad Alta
             </button>
           </div>
         </div>
@@ -156,9 +184,9 @@ const Reports = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-medium capitalize">{report.type}</h3>
+                            <h3 className="font-medium">{getTypeText(report.type)}</h3>
                             <span className={getSeverityClass(report.severity)}>
-                              {report.severity.charAt(0).toUpperCase() + report.severity.slice(1)}
+                              {getSeverityText(report.severity)}
                             </span>
                           </div>
                           <p className="text-sm text-muted-foreground mb-3">
@@ -180,7 +208,7 @@ const Reports = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 mr-1">
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                 </svg>
-                                Verified
+                                Verificado
                               </span>
                             </div>
                           )}
@@ -197,15 +225,15 @@ const Reports = () => {
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
               <Filter className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-medium">No Reports Found</h2>
+            <h2 className="text-lg font-medium">No se Encontraron Reportes</h2>
             <p className="text-muted-foreground mt-1 max-w-xs">
-              There are no incident reports matching your current filter.
+              No hay reportes de incidentes que coincidan con tu filtro actual.
             </p>
             <button
               onClick={() => setFilter("all")}
               className="mt-4 text-primary font-medium"
             >
-              View All Reports
+              Ver Todos los Reportes
             </button>
           </div>
         )}

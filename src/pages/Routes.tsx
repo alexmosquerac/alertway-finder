@@ -5,7 +5,7 @@ import { Search, Navigation, Map, Route, AlertCircle, Shield, ChevronRight } fro
 import { cn } from "@/lib/utils";
 
 const Routes = () => {
-  const [fromLocation, setFromLocation] = useState("Current Location");
+  const [fromLocation, setFromLocation] = useState("Ubicación Actual");
   const [toLocation, setToLocation] = useState("");
   const [showRoutes, setShowRoutes] = useState(false);
   
@@ -15,39 +15,39 @@ const Routes = () => {
     }
   };
   
-  // Simulated route data
+  // Datos de rutas simuladas
   const routes = [
     { 
       id: 1, 
-      name: "Safest Route",
-      eta: "25 mins",
-      distance: "1.8 miles",
-      safetyScore: "High",
+      name: "Ruta Más Segura",
+      eta: "25 min",
+      distance: "1,8 km",
+      safetyScore: "Alto",
       scoreColor: "text-safety-safe",
       scoreClass: "safety-indicator safe",
-      description: "Avoids all reported incident areas. Well-lit streets with high foot traffic.",
+      description: "Evita todas las zonas con incidentes reportados. Calles bien iluminadas con mucho tránsito peatonal.",
       icon: Shield,
     },
     { 
       id: 2, 
-      name: "Fastest Route",
-      eta: "18 mins",
-      distance: "1.5 miles",
-      safetyScore: "Medium",
+      name: "Ruta Más Rápida",
+      eta: "18 min",
+      distance: "1,5 km",
+      safetyScore: "Medio",
       scoreColor: "text-safety-caution",
       scoreClass: "safety-indicator caution",
-      description: "Passes through one area with minor reported incidents. Moderate foot traffic.",
+      description: "Pasa por una zona con incidentes menores reportados. Tránsito peatonal moderado.",
       icon: Route,
     },
     { 
       id: 3, 
-      name: "Alternative Route",
-      eta: "22 mins",
-      distance: "1.7 miles",
-      safetyScore: "Medium-High",
+      name: "Ruta Alternativa",
+      eta: "22 min",
+      distance: "1,7 km",
+      safetyScore: "Medio-Alto",
       scoreColor: "text-safety-info",
       scoreClass: "safety-indicator info",
-      description: "Well-lit route with good visibility. Several public businesses along the way.",
+      description: "Ruta bien iluminada con buena visibilidad. Varios comercios públicos en el camino.",
       icon: Map,
     }
   ];
@@ -55,7 +55,7 @@ const Routes = () => {
   return (
     <MainLayout>
       <div className="p-4 h-full flex flex-col">
-        <h1 className="text-2xl font-semibold mb-6">Find Safe Routes</h1>
+        <h1 className="text-2xl font-semibold mb-6">Encontrar Rutas Seguras</h1>
         
         <div className="space-y-3 mb-6">
           <div className="flex items-center p-3 bg-white rounded-xl shadow-elevation-low">
@@ -63,7 +63,7 @@ const Routes = () => {
             <input
               type="text"
               className="bg-transparent border-none outline-none flex-1 text-foreground placeholder:text-muted-foreground"
-              placeholder="From"
+              placeholder="Desde"
               value={fromLocation}
               onChange={(e) => setFromLocation(e.target.value)}
             />
@@ -74,7 +74,7 @@ const Routes = () => {
             <input
               type="text"
               className="bg-transparent border-none outline-none flex-1 text-foreground placeholder:text-muted-foreground"
-              placeholder="To"
+              placeholder="Hasta"
               value={toLocation}
               onChange={(e) => setToLocation(e.target.value)}
             />
@@ -89,13 +89,13 @@ const Routes = () => {
             )}
             disabled={!toLocation}
           >
-            Find Routes
+            Buscar Rutas
           </button>
         </div>
         
         {showRoutes ? (
           <div className="flex-1 overflow-auto">
-            <h2 className="text-lg font-medium mb-3">Recommended Routes</h2>
+            <h2 className="text-lg font-medium mb-3">Rutas Recomendadas</h2>
             
             <div className="space-y-4">
               {routes.map((route) => (
@@ -130,10 +130,10 @@ const Routes = () => {
                     
                     <div className="flex justify-between">
                       <button className="text-sm text-primary font-medium">
-                        View Details
+                        Ver Detalles
                       </button>
                       <button className="flex items-center text-sm text-primary font-medium">
-                        Start
+                        Iniciar
                         <ChevronRight className="w-4 h-4 ml-1" />
                       </button>
                     </div>
@@ -144,8 +144,8 @@ const Routes = () => {
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex animate-fade-in" style={{ animationDelay: '300ms' }}>
                 <AlertCircle className="text-blue-500 w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-700">
-                  <p className="font-medium mb-1">About Safety Ratings</p>
-                  <p>Routes are rated based on incident reports, lighting conditions, foot traffic, and proximity to safe zones.</p>
+                  <p className="font-medium mb-1">Acerca de las Calificaciones de Seguridad</p>
+                  <p>Las rutas se califican basándose en reportes de incidentes, condiciones de iluminación, tránsito peatonal y proximidad a zonas seguras.</p>
                 </div>
               </div>
             </div>
@@ -155,9 +155,9 @@ const Routes = () => {
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <Route className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-lg font-medium">Find Your Way Safely</h2>
+            <h2 className="text-lg font-medium">Encuentra tu Camino de Forma Segura</h2>
             <p className="text-muted-foreground mt-1 max-w-xs">
-              Enter your destination to get route options prioritized for safety.
+              Introduce tu destino para obtener opciones de rutas priorizadas por seguridad.
             </p>
           </div>
         )}
