@@ -7,11 +7,11 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Safety markers data (would come from API in real app)
 const safetyMarkers = [
-  { id: 1, coordinates: [-73.9712, 40.7831], level: 'safe', label: 'Central Park Area' },
-  { id: 2, coordinates: [-73.9862, 40.7580], level: 'caution', label: 'Times Square' },
-  { id: 3, coordinates: [-73.9787, 40.7425], level: 'danger', label: 'Midtown East' },
-  { id: 4, coordinates: [-73.9935, 40.7411], level: 'safe', label: 'Chelsea' },
-  { id: 5, coordinates: [-74.0060, 40.7314], level: 'caution', label: 'Greenwich Village' },
+  { id: 1, coordinates: [-73.9712, 40.7831] as [number, number], level: 'safe', label: 'Central Park Area' },
+  { id: 2, coordinates: [-73.9862, 40.7580] as [number, number], level: 'caution', label: 'Times Square' },
+  { id: 3, coordinates: [-73.9787, 40.7425] as [number, number], level: 'danger', label: 'Midtown East' },
+  { id: 4, coordinates: [-73.9935, 40.7411] as [number, number], level: 'safe', label: 'Chelsea' },
+  { id: 5, coordinates: [-74.0060, 40.7314] as [number, number], level: 'caution', label: 'Greenwich Village' },
 ];
 
 const Map = () => {
