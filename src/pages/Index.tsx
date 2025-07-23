@@ -28,14 +28,26 @@ const Index = () => {
         <div className="flex-1 relative">
           <Map />
           
-          {/* Botón de emergencia */}
-          <button
-            onClick={() => setIsAlertModalOpen(true)}
-            className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-destructive text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium shadow-elevation-medium flex items-center animate-pulse-subtle text-sm sm:text-base"
-          >
-            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-            Emergencia
-          </button>
+          {/* Botones de acción */}
+          <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 flex gap-3">
+            {/* Botón de reportar incidente */}
+            <button
+              onClick={() => setIsReportModalOpen(true)}
+              className="bg-safety-caution text-white px-4 sm:px-5 py-2 sm:py-3 rounded-full font-medium shadow-elevation-medium flex items-center text-sm sm:text-base hover:bg-safety-caution/90 transition-colors"
+            >
+              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+              Reportar
+            </button>
+            
+            {/* Botón de emergencia */}
+            <button
+              onClick={() => setIsAlertModalOpen(true)}
+              className="bg-destructive text-white px-4 sm:px-5 py-2 sm:py-3 rounded-full font-medium shadow-elevation-medium flex items-center animate-pulse-subtle text-sm sm:text-base"
+            >
+              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+              Emergencia
+            </button>
+          </div>
         </div>
       </div>
       
