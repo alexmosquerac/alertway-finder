@@ -9,7 +9,7 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background">
-      <main className="flex-1 overflow-hidden relative">
+      <main className="flex-1 overflow-hidden relative min-h-0">
         {children}
       </main>
       <Navigation />

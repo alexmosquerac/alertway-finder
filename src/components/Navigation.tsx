@@ -20,16 +20,16 @@ const Navigation = () => {
   }, [location.pathname]);
   
   const navItems = [
-    { path: "/", icon: MapPin, label: "Map" },
-    { path: "/routes", icon: Route, label: "Routes" },
-    { path: "/reports", icon: AlertTriangle, label: "Reports" },
-    { path: "/contacts", icon: Phone, label: "Contacts" },
-    { path: "/tips", icon: Shield, label: "Tips" },
-    { path: "/settings", icon: Settings, label: "Settings" }
+    { path: "/", icon: MapPin, label: "Mapa" },
+    { path: "/routes", icon: Route, label: "Rutas" },
+    { path: "/reports", icon: AlertTriangle, label: "Reportes" },
+    { path: "/contacts", icon: Phone, label: "Contactos" },
+    { path: "/tips", icon: Shield, label: "Consejos" },
+    { path: "/settings", icon: Settings, label: "Ajustes" }
   ];
 
   return (
-    <nav className="glass-panel mx-4 mb-4 rounded-2xl overflow-hidden py-2 px-4 shadow-elevation-medium">
+    <nav className="glass-panel mx-2 mb-2 rounded-2xl overflow-hidden py-2 px-2 shadow-elevation-medium">
       <ul className="flex items-center justify-around">
         {navItems.map((item) => (
           <li key={item.path}>
@@ -44,7 +44,7 @@ const Navigation = () => {
             >
               <div 
                 className={cn(
-                  "relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300",
+                  "relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl transition-all duration-300",
                   currentPath === item.path ? "bg-primary/10" : "bg-transparent"
                 )}
               >
@@ -58,7 +58,7 @@ const Navigation = () => {
                 )}
               </div>
               <span className={cn(
-                "text-xs mt-1 font-medium transition-all duration-300",
+                "text-xs mt-1 font-medium transition-all duration-300 hidden sm:block",
                 currentPath === item.path ? "opacity-100" : "opacity-70"
               )}>
                 {item.label}

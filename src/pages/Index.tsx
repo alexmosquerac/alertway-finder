@@ -31,10 +31,10 @@ const Index = () => {
           {/* Botón de emergencia */}
           <button
             onClick={() => setIsAlertModalOpen(true)}
-            className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-destructive text-white px-6 py-3 rounded-full font-medium shadow-elevation-medium flex items-center animate-pulse-subtle"
+            className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-destructive text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full font-medium shadow-elevation-medium flex items-center animate-pulse-subtle text-sm sm:text-base"
           >
-            <AlertTriangle className="w-5 h-5 mr-2" />
-            Alerta de Emergencia
+            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+            Emergencia
           </button>
         </div>
       </div>

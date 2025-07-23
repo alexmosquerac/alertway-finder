@@ -147,8 +147,8 @@ const Map = () => {
   return (
     <div className="relative h-full w-full">
       {/* Overlay de búsqueda */}
-      <div className="absolute top-4 left-4 right-4 z-10">
-        <div className="glass-panel flex items-center p-3 rounded-xl">
+      <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 z-10">
+        <div className="glass-panel flex items-center p-2 sm:p-3 rounded-xl">
           <Search className="w-5 h-5 text-muted-foreground mr-2" />
           <input
             type="text"
@@ -176,24 +176,24 @@ const Map = () => {
       
       {/* Botón de ubicación actual */}
       <button 
-        className="action-button absolute bottom-28 right-4 bg-white text-primary"
+        className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-elevation-medium bg-white text-primary transition-transform hover:scale-105 active:scale-95 absolute bottom-28 right-2 sm:right-4"
         aria-label="Ubicación actual"
         onClick={goToUserLocation}
       >
-        <Navigation className="w-5 h-5" />
+        <Navigation className="w-4 h-4 sm:w-5 sm:h-5" />
       </button>
       
       {/* Botón de reportar incidente */}
       <button 
-        className="action-button absolute bottom-28 left-4 bg-destructive text-destructive-foreground"
+        className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full shadow-elevation-medium bg-destructive text-destructive-foreground transition-transform hover:scale-105 active:scale-95 absolute bottom-28 left-2 sm:left-4"
         aria-label="Reportar incidente"
       >
-        <AlertTriangle className="w-5 h-5" />
+        <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
       </button>
       
       {/* Panel de información de seguridad */}
       {safetyLevel && selectedMarker && (
-        <div className="absolute bottom-20 left-4 right-4 glass-panel p-4 rounded-xl animate-fade-in-up">
+        <div className="absolute bottom-20 left-2 right-2 sm:left-4 sm:right-4 glass-panel p-3 sm:p-4 rounded-xl animate-fade-in-up">
           <div className="flex items-start">
             <div className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0",
@@ -213,13 +213,13 @@ const Map = () => {
                   {selectedMarker.label}
                 </h3>
                 <button 
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground text-xs sm:text-sm"
                   onClick={() => setSafetyLevel(null)}
                 >
                   Cerrar
                 </button>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {safetyLevel === 'safe' ? 
                   'Esta zona ha sido calificada como segura por los miembros de la comunidad con pocos reportes de incidentes.' : 
                 safetyLevel === 'caution' ? 
@@ -228,10 +228,10 @@ const Map = () => {
               </p>
               {safetyLevel !== 'safe' && (
                 <div className="mt-3 flex items-center justify-between">
-                  <button className="text-sm text-primary font-medium">
-                    Ver opciones de rutas seguras
+                  <button className="text-xs sm:text-sm text-primary font-medium">
+                    Ver rutas seguras
                   </button>
-                  <button className="text-sm text-primary font-medium">
+                  <button className="text-xs sm:text-sm text-primary font-medium">
                     Alertar contactos
                   </button>
                 </div>

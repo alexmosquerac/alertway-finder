@@ -6,58 +6,58 @@ const SafetyTips = () => {
   const tipCategories = [
     {
       id: "general",
-      title: "General Safety",
+      title: "Seguridad general",
       icon: Shield,
       color: "text-safety-info",
       bg: "bg-safety-info/10",
       tips: [
-        "Stay aware of your surroundings at all times",
-        "Trust your instincts – if something feels wrong, it probably is",
-        "Keep emergency contacts easily accessible",
-        "Share your location with trusted friends when in unfamiliar areas",
-        "Avoid displaying valuable items in public"
+        "Mantente alerta de tu entorno en todo momento",
+        "Confía en tus instintos: si algo se siente mal, probablemente lo esté",
+        "Mantén los contactos de emergencia fácilmente accesibles",
+        "Comparte tu ubicación con amigos de confianza en áreas desconocidas",
+        "Evita mostrar objetos valiosos en público"
       ]
     },
     {
       id: "night",
-      title: "Night Safety",
+      title: "Seguridad nocturna",
       icon: Eye,
       color: "text-safety-caution",
       bg: "bg-safety-caution/10",
       tips: [
-        "Stick to well-lit and populated areas",
-        "Use SafePath to plan routes before heading out",
-        "Consider taking transportation instead of walking alone",
-        "Let someone know your expected arrival time",
-        "Keep headphone volume low to stay alert"
+        "Mantente en áreas bien iluminadas y pobladas",
+        "Usa AlertWay para planificar rutas antes de salir",
+        "Considera usar transporte en lugar de caminar solo",
+        "Dile a alguien tu hora estimada de llegada",
+        "Mantén el volumen de los auriculares bajo para estar alerta"
       ]
     },
     {
       id: "emergency",
-      title: "Emergency Response",
+      title: "Respuesta de emergencia",
       icon: Phone,
       color: "text-safety-danger",
       bg: "bg-safety-danger/10",
       tips: [
-        "Call emergency services (911) immediately in dangerous situations",
-        "Use the emergency alert feature to notify contacts",
-        "Provide clear location information when reporting incidents",
-        "Move to a safe location if possible",
-        "Follow instructions from emergency responders"
+        "Llama a servicios de emergencia (112) inmediatamente en situaciones peligrosas",
+        "Usa la función de alerta de emergencia para notificar a tus contactos",
+        "Proporciona información clara de ubicación al reportar incidentes",
+        "Muévete a un lugar seguro si es posible",
+        "Sigue las instrucciones de los equipos de emergencia"
       ]
     },
     {
       id: "travel",
-      title: "Travel Safety",
+      title: "Seguridad en viajes",
       icon: Map,
       color: "text-safety-safe",
       bg: "bg-safety-safe/10",
       tips: [
-        "Research areas before visiting unfamiliar locations",
-        "Use the SafePath map to identify safer routes",
-        "Keep digital copies of important documents",
-        "Learn basic phrases if traveling to areas with different languages",
-        "Register with local embassies when traveling internationally"
+        "Investiga las áreas antes de visitar ubicaciones desconocidas",
+        "Usa el mapa de AlertWay para identificar rutas más seguras",
+        "Mantén copias digitales de documentos importantes",
+        "Aprende frases básicas si viajas a áreas con idiomas diferentes",
+        "Regístrate en embajadas locales cuando viajes internacionalmente"
       ]
     }
   ];
@@ -93,10 +93,10 @@ const SafetyTips = () => {
       <div className="border border-border rounded-xl overflow-hidden p-4">
         <div className="flex items-center mb-4">
           <AlertTriangle className="w-5 h-5 text-safety-caution mr-2" />
-          <h3 className="font-medium">Remember</h3>
+          <h3 className="font-medium">Recuerda</h3>
         </div>
         <p className="text-muted-foreground text-sm">
-          SafePath is designed to help you make informed decisions but cannot guarantee safety. Always use common sense and contact emergency services in dangerous situations.
+          AlertWay está diseñado para ayudarte a tomar decisiones informadas pero no puede garantizar la seguridad. Siempre usa el sentido común y contacta a servicios de emergencia en situaciones peligrosas.
         </p>
       </div>
     </div>

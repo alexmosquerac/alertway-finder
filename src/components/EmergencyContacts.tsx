@@ -61,13 +61,13 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Emergency Contacts</h2>
+        <h2 className="text-xl font-semibold">Contactos de Emergencia</h2>
         <button
           onClick={() => setIsAddingContact(true)}
           className="flex items-center text-sm text-primary font-medium"
         >
           <Plus className="w-4 h-4 mr-1" />
-          Add Contact
+          Añadir Contacto
         </button>
       </div>
       
@@ -76,15 +76,15 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
             <Phone className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium">No Contacts Added</h3>
+          <h3 className="text-lg font-medium">No hay contactos añadidos</h3>
           <p className="text-muted-foreground mt-1 max-w-xs">
-            Add emergency contacts who will be notified when you send an alert.
+            Añade contactos de emergencia que serán notificados cuando envíes una alerta.
           </p>
           <button
             onClick={() => setIsAddingContact(true)}
             className="mt-4 bg-primary text-primary-foreground px-4 py-2 rounded-xl font-medium"
           >
-            Add Your First Contact
+            Añadir tu primer contacto
           </button>
         </div>
       ) : (
@@ -94,7 +94,7 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
               {editingId === contact.id ? (
                 <div className="p-4 space-y-3">
                   <div>
-                    <label className="text-xs text-muted-foreground">Name</label>
+                    <label className="text-xs text-muted-foreground">Nombre</label>
                     <input
                       type="text"
                       className="w-full p-2 rounded-lg border border-input bg-background"
@@ -103,7 +103,7 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">Phone</label>
+                    <label className="text-xs text-muted-foreground">Teléfono</label>
                     <input
                       type="tel"
                       className="w-full p-2 rounded-lg border border-input bg-background"
@@ -112,7 +112,7 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">Relationship</label>
+                    <label className="text-xs text-muted-foreground">Relación</label>
                     <input
                       type="text"
                       className="w-full p-2 rounded-lg border border-input bg-background"
@@ -125,13 +125,13 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                       onClick={() => setEditingId(null)}
                       className="px-3 py-1 text-sm rounded-lg bg-secondary text-secondary-foreground"
                     >
-                      Cancel
+                      Cancelar
                     </button>
                     <button
                       onClick={() => handleUpdateContact(contact.id, {})}
                       className="px-3 py-1 text-sm rounded-lg bg-primary text-primary-foreground"
                     >
-                      Save
+                      Guardar
                     </button>
                   </div>
                 </div>
@@ -147,7 +147,7 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                           {contact.name}
                           {contact.isPrimary && (
                             <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                              Primary
+                              Principal
                             </span>
                           )}
                         </div>
@@ -163,7 +163,7 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                         <button
                           onClick={() => handleSetPrimary(contact.id)}
                           className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
-                          title="Set as primary contact"
+                          title="Establecer como contacto principal"
                         >
                           <Phone className="w-4 h-4" />
                         </button>
@@ -171,14 +171,14 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                       <button
                         onClick={() => setEditingId(contact.id)}
                         className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
-                        title="Edit contact"
+                        title="Editar contacto"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleRemoveContact(contact.id)}
                         className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        title="Remove contact"
+                        title="Eliminar contacto"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -194,20 +194,20 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
       {isAddingContact && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-end justify-center sm:items-center animate-fade-in">
           <div className="bg-card w-full max-w-md rounded-t-3xl sm:rounded-2xl shadow-elevation-high p-6 mx-4 slide-up">
-            <h3 className="text-lg font-medium mb-4">Add Emergency Contact</h3>
+            <h3 className="text-lg font-medium mb-4">Añadir contacto de emergencia</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-muted-foreground">Name</label>
+                <label className="text-sm text-muted-foreground">Nombre</label>
                 <input
                   type="text"
                   className="w-full p-3 mt-1 rounded-xl border border-input bg-background"
-                  placeholder="Contact name"
+                  placeholder="Nombre del contacto"
                   value={newContact.name}
                   onChange={(e) => setNewContact({...newContact, name: e.target.value})}
                 />
               </div>
               <div>
-                <label className="text-sm text-muted-foreground">Phone Number</label>
+                <label className="text-sm text-muted-foreground">Número de teléfono</label>
                 <input
                   type="tel"
                   className="w-full p-3 mt-1 rounded-xl border border-input bg-background"
@@ -217,18 +217,18 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                 />
               </div>
               <div>
-                <label className="text-sm text-muted-foreground">Relationship</label>
+                <label className="text-sm text-muted-foreground">Relación</label>
                 <select
                   className="w-full p-3 mt-1 rounded-xl border border-input bg-background"
                   value={newContact.relationship}
                   onChange={(e) => setNewContact({...newContact, relationship: e.target.value})}
                 >
-                  <option value="">Select relationship</option>
-                  <option value="Family">Family</option>
-                  <option value="Friend">Friend</option>
-                  <option value="Partner">Partner</option>
-                  <option value="Colleague">Colleague</option>
-                  <option value="Other">Other</option>
+                  <option value="">Seleccionar relación</option>
+                  <option value="Familia">Familia</option>
+                  <option value="Amigo">Amigo</option>
+                  <option value="Pareja">Pareja</option>
+                  <option value="Compañero">Compañero</option>
+                  <option value="Otro">Otro</option>
                 </select>
               </div>
               <div className="flex gap-3 mt-6">
@@ -236,7 +236,7 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                   onClick={() => setIsAddingContact(false)}
                   className="flex-1 py-3 rounded-xl font-medium bg-secondary text-secondary-foreground"
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   onClick={handleAddContact}
@@ -247,7 +247,7 @@ const EmergencyContacts = ({ initialContacts = [] }: EmergencyContactsProps) => 
                   )}
                   disabled={!newContact.name || !newContact.phone}
                 >
-                  Add Contact
+                  Añadir contacto
                 </button>
               </div>
             </div>

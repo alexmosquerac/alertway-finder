@@ -18,12 +18,12 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
   const [isSubmitted, setIsSubmitted] = useState(false);
   
   const incidentTypes = [
-    { id: "theft", label: "Theft" },
-    { id: "assault", label: "Assault" },
-    { id: "harassment", label: "Harassment" },
-    { id: "suspicious", label: "Suspicious Activity" },
-    { id: "vandalism", label: "Vandalism" },
-    { id: "other", label: "Other" }
+    { id: "theft", label: "Robo" },
+    { id: "assault", label: "Agresión" },
+    { id: "harassment", label: "Acoso" },
+    { id: "suspicious", label: "Actividad sospechosa" },
+    { id: "vandalism", label: "Vandalismo" },
+    { id: "other", label: "Otro" }
   ];
   
   const handleSubmit = () => {
@@ -79,7 +79,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                 onClick={handleBack}
                 className="text-muted-foreground"
               >
-                {step > 1 ? "Back" : "Cancel"}
+                {step > 1 ? "Atrás" : "Cancelar"}
               </button>
               <div className="flex items-center gap-1">
                 {[1, 2, 3].map((s) => (
@@ -104,9 +104,9 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
             {step === 1 && (
               <div className="space-y-6 animate-fade-in">
                 <div>
-                  <h2 className="text-xl font-semibold">Report an Incident</h2>
+                  <h2 className="text-xl font-semibold">Reportar un incidente</h2>
                   <p className="text-muted-foreground mt-1">
-                    What type of incident would you like to report?
+                    ¿Qué tipo de incidente quieres reportar?
                   </p>
                 </div>
                 
@@ -136,7 +136,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                   )}
                   disabled={!incidentType}
                 >
-                  Next
+                  Siguiente
                 </button>
               </div>
             )}
@@ -144,36 +144,36 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
             {step === 2 && (
               <div className="space-y-6 animate-fade-in">
                 <div>
-                  <h2 className="text-xl font-semibold">Incident Details</h2>
+                  <h2 className="text-xl font-semibold">Detalles del incidente</h2>
                   <p className="text-muted-foreground mt-1">
-                    Provide more information about what happened.
+                    Proporciona más información sobre lo que pasó.
                   </p>
                 </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm text-muted-foreground">Description</label>
+                    <label className="text-sm text-muted-foreground">Descripción</label>
                     <textarea
                       className="w-full p-3 mt-1 rounded-xl border border-input bg-background min-h-24"
-                      placeholder="Describe what you saw or experienced..."
+                      placeholder="Describe lo que viste o experimentaste..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </div>
                   
                   <div>
-                    <label className="text-sm text-muted-foreground">When did this happen?</label>
+                    <label className="text-sm text-muted-foreground">¿Cuándo pasó esto?</label>
                     <div className="relative mt-1">
                       <select
                         className="w-full appearance-none p-3 pr-10 rounded-xl border border-input bg-background"
                         value={incidentTime}
                         onChange={(e) => setIncidentTime(e.target.value)}
                       >
-                        <option value="now">Just now</option>
-                        <option value="today">Earlier today</option>
-                        <option value="yesterday">Yesterday</option>
-                        <option value="week">Within the past week</option>
-                        <option value="month">Within the past month</option>
+                        <option value="now">Ahora mismo</option>
+                        <option value="today">Hoy más temprano</option>
+                        <option value="yesterday">Ayer</option>
+                        <option value="week">En la última semana</option>
+                        <option value="month">En el último mes</option>
                       </select>
                       <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     </div>
@@ -182,7 +182,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                   <div className="flex items-center">
                     <MapPin className="text-muted-foreground w-5 h-5 mr-2" />
                     <div className="text-sm">
-                      <span className="font-medium">Location:</span> Using your current location
+                      <span className="font-medium">Ubicación:</span> Usando tu ubicación actual
                     </div>
                   </div>
                 </div>
@@ -196,7 +196,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                   )}
                   disabled={!description}
                 >
-                  Next
+                  Siguiente
                 </button>
               </div>
             )}
@@ -204,9 +204,9 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
             {step === 3 && (
               <div className="space-y-6 animate-fade-in">
                 <div>
-                  <h2 className="text-xl font-semibold">Add Evidence (Optional)</h2>
+                  <h2 className="text-xl font-semibold">Añadir evidencia (opcional)</h2>
                   <p className="text-muted-foreground mt-1">
-                    Upload photos or videos if available.
+                    Sube fotos o videos si están disponibles.
                   </p>
                 </div>
                 
@@ -215,9 +215,9 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                     <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
                       <Upload className="w-6 h-6 text-muted-foreground" />
                     </div>
-                    <p className="font-medium">Drag & drop files here</p>
+                    <p className="font-medium">Arrastra y suelta archivos aquí</p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      or click to browse your device
+                      o haz clic para explorar tu dispositivo
                     </p>
                     <input
                       type="file"
@@ -226,7 +226,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                       multiple
                     />
                     <button className="mt-4 text-sm text-primary font-medium py-2 px-4 border border-primary/30 rounded-lg">
-                      Choose Files
+                      Elegir archivos
                     </button>
                   </div>
                 </div>
@@ -234,7 +234,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex">
                   <Info className="text-blue-500 w-5 h-5 mr-3 flex-shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-700">
-                    Your report will help keep the community safe. All reports are kept anonymous unless you choose to share your information.
+                    Tu reporte ayudará a mantener segura a la comunidad. Todos los reportes se mantienen anónimos a menos que elijas compartir tu información.
                   </p>
                 </div>
                 
@@ -248,7 +248,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                     )}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Submitting..." : "Submit Report"}
+                    {isSubmitting ? "Enviando..." : "Enviar reporte"}
                   </button>
                 </div>
               </div>
@@ -259,9 +259,9 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
             <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center animate-scale-in">
               <Check className="w-8 h-8 text-green-500" />
             </div>
-            <h3 className="text-lg font-medium">Report Submitted</h3>
+            <h3 className="text-lg font-medium">Reporte enviado</h3>
             <p className="text-center text-muted-foreground max-w-xs">
-              Thank you for your report. It will help keep the community safe.
+              Gracias por tu reporte. Ayudará a mantener segura a la comunidad.
             </p>
           </div>
         )}
