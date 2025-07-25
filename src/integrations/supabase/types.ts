@@ -14,7 +14,146 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      incident_reports: {
+        Row: {
+          address: string | null
+          created_at: string
+          description: string
+          id: string
+          image_urls: string[] | null
+          incident_time: string
+          incident_type: string
+          is_verified: boolean | null
+          latitude: number | null
+          longitude: number | null
+          severity: string
+          status: string
+          title: string | null
+          updated_at: string
+          user_id: string
+          verification_count: number | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          image_urls?: string[] | null
+          incident_time: string
+          incident_type: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          severity?: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          verification_count?: number | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          image_urls?: string[] | null
+          incident_time?: string
+          incident_type?: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          severity?: string
+          status?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          verification_count?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          full_name: string | null
+          id: string
+          level: number | null
+          phone: string | null
+          points: number | null
+          total_reports: number | null
+          updated_at: string
+          user_id: string
+          username: string | null
+          verified_reports: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          full_name?: string | null
+          id?: string
+          level?: number | null
+          phone?: string | null
+          points?: number | null
+          total_reports?: number | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+          verified_reports?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          full_name?: string | null
+          id?: string
+          level?: number | null
+          phone?: string | null
+          points?: number | null
+          total_reports?: number | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+          verified_reports?: number | null
+        }
+        Relationships: []
+      }
+      report_verifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_accurate: boolean
+          report_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_accurate: boolean
+          report_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_accurate?: boolean
+          report_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_verifications_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "incident_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
