@@ -1,10 +1,14 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import MainLayout from "@/layouts/MainLayout";
 import { Bell, Shield, Map, User, ChevronRight, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Settings = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [settings, setSettings] = useState({
     notifications: true,
     location: true,
@@ -20,6 +24,24 @@ const Settings = () => {
       [key]: !prev[key]
     }));
   };
+
+  const handleNavigation = (actionId: string) => {
+    switch(actionId) {
+      case "profile":
+        if (user) {
+          navigate("/profile");
+        } else {
+          navigate("/auth");
+        }
+        break;
+      case "privacy":
+      case "terms":
+        // Estas páginas las implementaremos próximamente
+        break;
+      default:
+        break;
+    }
+  };
   
   const settingSections = [
     {
@@ -28,7 +50,11 @@ const Settings = () => {
       icon: User,
       color: "bg-primary/10 text-primary",
       items: [
-        { id: "profile", label: "Tu Perfil", action: "navigate" },
+        { 
+          id: "profile", 
+          label: user ? "Tu Perfil" : "Iniciar Sesión", 
+          action: "navigate" 
+        },
         { id: "privacy", label: "Configuración de Privacidad", action: "navigate" },
         { id: "security", label: "Seguridad", action: "navigate" }
       ]
@@ -167,7 +193,12 @@ const Settings = () => {
                           />
                         </button>
                       ) : (
-                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                        <button 
+                          onClick={() => handleNavigation(item.id)}
+                          className="flex items-center"
+                        >
+                          <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                        </button>
                       )}
                     </div>
                   ))}

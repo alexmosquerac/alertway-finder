@@ -1,59 +1,60 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "@/layouts/MainLayout";
 import ReportIncident from "@/components/ReportIncident";
-import { AlertTriangle, Clock, MapPin, Filter, Plus, User, Eye } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { AlertTriangle, Clock, MapPin, Filter, Plus, User, Eye, CheckCircle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface IncidentReport {
+  id: string;
+  incident_type: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  incident_time: string;
+  severity: string;
+  status: string;
+  is_verified: boolean;
+  verification_count: number;
+  created_at: string;
+}
 
 const Reports = () => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [filter, setFilter] = useState("all");
-  
-  // Reportes de incidentes simulados
-  const reports = [
-    {
-      id: 1,
-      type: "theft",
-      description: "Robo reportado de una bicicleta que estaba aparcada fuera de la cafetería.",
-      time: "Hace 2 horas",
-      location: "Calle Gran Vía & Calle Alcalá",
-      severity: "medium",
-      verified: true
-    },
-    {
-      id: 2,
-      type: "suspicious",
-      description: "Persona sospechosa merodeando cerca de la entrada del parque durante más de una hora.",
-      time: "Ayer",
-      location: "Parque del Retiro, Entrada Este",
-      severity: "low",
-      verified: false
-    },
-    {
-      id: 3,
-      type: "harassment",
-      description: "Acoso verbal reportado cerca de la estación de autobuses. Tener precaución en esta zona.",
-      time: "Ayer",
-      location: "Estación de Atocha",
-      severity: "high",
-      verified: true
-    },
-    {
-      id: 4,
-      type: "vandalism",
-      description: "Múltiples coches con ventanas rotas reportados en incidente nocturno.",
-      time: "Hace 2 días",
-      location: "Aparcamiento Calle Serrano",
-      severity: "medium",
-      verified: true
+  const [reports, setReports] = useState<IncidentReport[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const fetchReports = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('incident_reports')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching reports:', error);
+        return;
+      }
+
+      setReports(data || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
   
   const filteredReports = filter === "all" ? 
     reports : 
     reports.filter(report => 
-      (filter === "verified" && report.verified) || 
-      (filter === "unverified" && !report.verified) ||
+      (filter === "verified" && report.is_verified) || 
+      (filter === "unverified" && !report.is_verified) ||
       (filter === "high" && report.severity === "high")
     );
   
@@ -169,13 +170,13 @@ const Reports = () => {
           <div className="flex-1 overflow-auto">
             <div className="space-y-4">
               {filteredReports.map((report) => {
-                const IncidentIcon = getIncidentIcon(report.type);
+                const IncidentIcon = getIncidentIcon(report.incident_type);
                 
                 return (
                   <div 
                     key={report.id} 
                     className="border border-border rounded-xl overflow-hidden bg-white shadow-elevation-low animate-fade-in"
-                    style={{ animationDelay: `${(report.id - 1) * 100}ms` }}
+                    style={{ animationDelay: `${filteredReports.indexOf(report) * 100}ms` }}
                   >
                     <div className="p-4">
                       <div className="flex items-start">
@@ -184,7 +185,7 @@ const Reports = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-medium">{getTypeText(report.type)}</h3>
+                            <h3 className="font-medium">{getTypeText(report.incident_type)}</h3>
                             <span className={getSeverityClass(report.severity)}>
                               {getSeverityText(report.severity)}
                             </span>
@@ -195,14 +196,14 @@ const Reports = () => {
                           <div className="flex flex-col sm:flex-row sm:items-center text-xs text-muted-foreground">
                             <div className="flex items-center mr-4">
                               <Clock className="w-3.5 h-3.5 mr-1" />
-                              <span>{report.time}</span>
+                              <span>{new Date(report.created_at).toLocaleDateString()}</span>
                             </div>
                             <div className="flex items-center mt-1 sm:mt-0">
                               <MapPin className="w-3.5 h-3.5 mr-1" />
-                              <span>{report.location}</span>
+                              <span>{report.latitude.toFixed(4)}, {report.longitude.toFixed(4)}</span>
                             </div>
                           </div>
-                          {report.verified && (
+                          {report.is_verified && (
                             <div className="mt-2 flex items-center">
                               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3 mr-1">
@@ -242,6 +243,7 @@ const Reports = () => {
       <ReportIncident
         isVisible={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+        onSubmit={() => fetchReports()}
       />
     </MainLayout>
   );

@@ -2,6 +2,10 @@
 import { useState } from "react";
 import { Camera, MapPin, Clock, AlertTriangle, ChevronDown, X, Check, Upload, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ReportIncidentProps {
   isVisible: boolean;
@@ -10,6 +14,9 @@ interface ReportIncidentProps {
 }
 
 const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) => {
+  const { user } = useAuth();
+  const { position, loading: locationLoading, error: locationError } = useGeolocation();
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [incidentType, setIncidentType] = useState("");
   const [description, setDescription] = useState("");
@@ -26,12 +33,57 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
     { id: "other", label: "Otro" }
   ];
   
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!user) {
+      toast({
+        title: "Autenticación requerida",
+        description: "Debes iniciar sesión para reportar incidentes",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!position) {
+      toast({
+        title: "Ubicación requerida",
+        description: "No se pudo obtener tu ubicación actual",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Calcular timestamp del incidente
+      let incidentTimestamp = new Date();
+      if (incidentTime === "today") {
+        incidentTimestamp.setHours(incidentTimestamp.getHours() - 2);
+      } else if (incidentTime === "yesterday") {
+        incidentTimestamp.setDate(incidentTimestamp.getDate() - 1);
+      } else if (incidentTime === "week") {
+        incidentTimestamp.setDate(incidentTimestamp.getDate() - 3);
+      } else if (incidentTime === "month") {
+        incidentTimestamp.setDate(incidentTimestamp.getDate() - 10);
+      }
+
+      const { error } = await supabase
+        .from('incident_reports')
+        .insert({
+          user_id: user.id,
+          incident_type: incidentType,
+          description,
+          latitude: position.latitude,
+          longitude: position.longitude,
+          incident_time: incidentTimestamp.toISOString(),
+          severity: 'medium',
+          status: 'pending'
+        });
+
+      if (error) {
+        throw error;
+      }
+
       setIsSubmitted(true);
       
       if (onSubmit) {
@@ -39,9 +91,14 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
           type: incidentType,
           description,
           time: incidentTime,
-          location: "Current Location", // In a real app, we would get actual coordinates
+          location: `${position.latitude}, ${position.longitude}`,
         });
       }
+
+      toast({
+        title: "Reporte enviado",
+        description: "Tu reporte ha sido enviado correctamente",
+      });
       
       // Reset form after showing confirmation
       setTimeout(() => {
@@ -52,7 +109,16 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
         setIsSubmitted(false);
         onClose();
       }, 3000);
-    }, 2000);
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      toast({
+        title: "Error al enviar reporte",
+        description: "No se pudo enviar el reporte. Intenta de nuevo.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   const handleNext = () => {
@@ -182,7 +248,10 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                   <div className="flex items-center">
                     <MapPin className="text-muted-foreground w-5 h-5 mr-2" />
                     <div className="text-sm">
-                      <span className="font-medium">Ubicación:</span> Usando tu ubicación actual
+                      <span className="font-medium">Ubicación:</span> 
+                      {locationLoading ? " Obteniendo ubicación..." : 
+                       locationError ? " Error obteniendo ubicación" :
+                       position ? " Ubicación actual detectada" : " Sin ubicación"}
                     </div>
                   </div>
                 </div>
@@ -192,9 +261,9 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                   className={cn(
                     "w-full py-3 rounded-xl font-medium transition-all duration-300",
                     "bg-primary text-primary-foreground",
-                    !description && "opacity-50 pointer-events-none"
+                    (!description || !position) && "opacity-50 pointer-events-none"
                   )}
-                  disabled={!description}
+                  disabled={!description || !position}
                 >
                   Siguiente
                 </button>
