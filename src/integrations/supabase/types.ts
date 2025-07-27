@@ -14,9 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      heatmap_data: {
+        Row: {
+          grid_lat: number
+          grid_lng: number
+          id: string
+          incident_count: number
+          risk_score: number
+          updated_at: string
+        }
+        Insert: {
+          grid_lat: number
+          grid_lng: number
+          id?: string
+          incident_count?: number
+          risk_score?: number
+          updated_at?: string
+        }
+        Update: {
+          grid_lat?: number
+          grid_lng?: number
+          id?: string
+          incident_count?: number
+          risk_score?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       incident_reports: {
         Row: {
           address: string | null
+          category: string
+          confirmations: Json | null
           created_at: string
           description: string
           id: string
@@ -32,9 +61,12 @@ export type Database = {
           updated_at: string
           user_id: string
           verification_count: number | null
+          weight: number | null
         }
         Insert: {
           address?: string | null
+          category?: string
+          confirmations?: Json | null
           created_at?: string
           description: string
           id?: string
@@ -50,9 +82,12 @@ export type Database = {
           updated_at?: string
           user_id: string
           verification_count?: number | null
+          weight?: number | null
         }
         Update: {
           address?: string | null
+          category?: string
+          confirmations?: Json | null
           created_at?: string
           description?: string
           id?: string
@@ -68,6 +103,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           verification_count?: number | null
+          weight?: number | null
         }
         Relationships: []
       }
@@ -159,7 +195,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_heatmap_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_incident_weight: {
+        Args: { category: string }
+        Returns: number
+      }
+      get_time_decay_factor: {
+        Args: { incident_time: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
