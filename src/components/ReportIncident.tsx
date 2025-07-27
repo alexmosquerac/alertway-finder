@@ -72,6 +72,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
         .insert({
           user_id: user.id,
           incident_type: incidentType,
+          category: incidentType, // Map incident_type to category
           description,
           latitude: position.latitude,
           longitude: position.longitude,
@@ -99,6 +100,9 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
         title: "Reporte enviado",
         description: "Tu reporte ha sido enviado correctamente",
       });
+
+      // Trigger heatmap recalculation
+      supabase.functions.invoke('calculate-heatmap').catch(console.error);
       
       // Reset form after showing confirmation
       setTimeout(() => {
