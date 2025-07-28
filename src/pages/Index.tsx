@@ -4,11 +4,14 @@ import MainLayout from "@/layouts/MainLayout";
 import Map from "@/components/Map";
 import SafetyAlert from "@/components/SafetyAlert";
 import ReportIncident from "@/components/ReportIncident";
-import { AlertTriangle, Bell } from "lucide-react";
+import { AlertTriangle, Bell, LogIn } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const { user } = useAuth();
   
   return (
     <MainLayout>
@@ -19,9 +22,21 @@ const Index = () => {
             <Bell className="w-5 h-5 text-safety-info mr-2" />
             <span className="text-sm font-medium">Alertas de seguridad activadas para tu zona</span>
           </div>
-          <button className="text-xs font-medium text-primary">
-            Configuración
-          </button>
+          <div className="flex items-center gap-2">
+            {!user ? (
+              <Link 
+                to="/auth" 
+                className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                Iniciar Sesión
+              </Link>
+            ) : (
+              <button className="text-xs font-medium text-primary">
+                Configuración
+              </button>
+            )}
+          </div>
         </div>
         
         {/* Vista principal del mapa */}

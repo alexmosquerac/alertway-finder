@@ -35,11 +35,7 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
   
   const handleSubmit = async () => {
     if (!user) {
-      toast({
-        title: "Autenticación requerida",
-        description: "Debes iniciar sesión para reportar incidentes",
-        variant: "destructive"
-      });
+      setStep(4); // Show auth step
       return;
     }
 
@@ -322,6 +318,41 @@ const ReportIncident = ({ isVisible, onClose, onSubmit }: ReportIncidentProps) =
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Enviando..." : "Enviar reporte"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6 animate-fade-in">
+                <div>
+                  <h2 className="text-xl font-semibold">Autenticación requerida</h2>
+                  <p className="text-muted-foreground mt-1">
+                    Debes iniciar sesión para reportar incidentes
+                  </p>
+                </div>
+                
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+                    <AlertTriangle className="w-8 h-8 text-destructive" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Tu cuenta ayuda a verificar reportes y mantener la comunidad segura
+                  </p>
+                </div>
+                
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => window.location.href = '/auth'}
+                    className="w-full py-3 rounded-xl font-medium bg-primary text-primary-foreground"
+                  >
+                    Iniciar Sesión / Registrarse
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="w-full py-3 rounded-xl font-medium border border-border"
+                  >
+                    Cancelar
                   </button>
                 </div>
               </div>
