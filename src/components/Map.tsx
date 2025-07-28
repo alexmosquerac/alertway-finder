@@ -1,14 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Navigation, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useMapbox } from '@/hooks/useMapbox';
+import MapControls from './MapControls';
+import MapLayers from './MapLayers';
+import MapMarkers, { SafetyMarker } from './MapMarkers';
 
-const safetyMarkers = [
+const safetyMarkers: SafetyMarker[] = [
   { id: 1, lat: 40.4168, lng: -3.7038, level: 'safe', label: 'Centro Madrid' },
   { id: 2, lat: 40.4200, lng: -3.7050, level: 'caution', label: 'Zona Norte' },
   { id: 3, lat: 40.4150, lng: -3.7020, level: 'danger', label: 'Zona Sur' },
@@ -20,6 +21,7 @@ const Map = () => {
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [recentIncidents, setRecentIncidents] = useState<any[]>([]);
   const [heatmapData, setHeatmapData] = useState<any[]>([]);
+  const { token: mapboxToken, loading: tokenLoading, error: tokenError } = useMapbox();
 
   // Load recent incidents and heatmap data
   const loadMapData = async () => {
@@ -47,10 +49,10 @@ const Map = () => {
   };
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !mapboxToken) return;
 
-    // Initialize map
-    mapboxgl.accessToken = 'pk.eyJ1IjoibG92YWJsZSIsImEiOiJjbGt4aWhvbHMwOG52M2VtbmZsNmV3eWo0In0.fXlp7_5JLra9nF-k-8JU4A';
+    // Initialize map with secure token
+    mapboxgl.accessToken = mapboxToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -120,144 +122,14 @@ const Map = () => {
         }
       });
 
-      // Add safety markers
-      safetyMarkers.forEach((marker, index) => {
-        const el = document.createElement('div');
-        el.className = 'custom-marker';
-        el.style.backgroundImage = `url(data:image/svg+xml;base64,${btoa(`
-          <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="15" cy="15" r="12" fill="${
-              marker.level === 'safe' ? '#22c55e' : 
-              marker.level === 'caution' ? '#f59e0b' : '#ef4444'
-            }" stroke="white" stroke-width="2"/>
-            <circle cx="15" cy="15" r="6" fill="white"/>
-          </svg>
-        `)})`;
-        el.style.width = '30px';
-        el.style.height = '30px';
-        el.style.backgroundSize = 'cover';
-        el.style.cursor = 'pointer';
-
-        el.addEventListener('click', () => {
-          setSelectedMarker(marker);
-        });
-
-        new mapboxgl.Marker(el)
-          .setLngLat([marker.lng, marker.lat])
-          .addTo(map.current!);
-      });
-
-      // Try to get user's current location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            
-            // Create user location marker
-            const userMarker = document.createElement('div');
-            userMarker.className = 'user-location-marker';
-            userMarker.style.backgroundImage = `url(data:image/svg+xml;base64,${btoa(`
-              <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="10" cy="10" r="8" fill="#3b82f6" stroke="white" stroke-width="2"/>
-                <circle cx="10" cy="10" r="3" fill="white"/>
-              </svg>
-            `)})`;
-            userMarker.style.width = '20px';
-            userMarker.style.height = '20px';
-            userMarker.style.backgroundSize = 'cover';
-
-            new mapboxgl.Marker(userMarker)
-              .setLngLat([longitude, latitude])
-              .addTo(map.current!);
-
-            // Fly to user location
-            map.current!.flyTo({
-              center: [longitude, latitude],
-              zoom: 15,
-            });
-          },
-          (error) => {
-            console.error('Error getting location:', error);
-          }
-        );
-      }
     });
 
     // Cleanup
     return () => {
       map.current?.remove();
     };
-  }, []);
+  }, [mapboxToken]);
 
-  // Update map data when incidents or heatmap data changes
-  useEffect(() => {
-    if (!map.current || !map.current.isStyleLoaded()) return;
-
-    // Update heatmap data
-    const heatmapFeatures = heatmapData.map(point => ({
-      type: 'Feature' as const,
-      properties: {
-        risk_score: point.risk_score,
-        incident_count: point.incident_count
-      },
-      geometry: {
-        type: 'Point' as const,
-        coordinates: [point.grid_lng, point.grid_lat]
-      }
-    }));
-
-    const heatmapSource = map.current.getSource('heatmap') as mapboxgl.GeoJSONSource;
-    if (heatmapSource) {
-      heatmapSource.setData({
-        type: 'FeatureCollection',
-        features: heatmapFeatures
-      });
-    }
-
-    // Update incidents data
-    const incidentFeatures = recentIncidents.map(incident => ({
-      type: 'Feature' as const,
-      properties: {
-        id: incident.id,
-        category: incident.category,
-        title: incident.title,
-        incident_time: incident.incident_time
-      },
-      geometry: {
-        type: 'Point' as const,
-        coordinates: [incident.longitude, incident.latitude]
-      }
-    }));
-
-    const incidentsSource = map.current.getSource('incidents') as mapboxgl.GeoJSONSource;
-    if (incidentsSource) {
-      incidentsSource.setData({
-        type: 'FeatureCollection',
-        features: incidentFeatures
-      });
-    }
-
-    // Add popups for incidents when clicked
-    if (recentIncidents.length > 0) {
-      recentIncidents.forEach(incident => {
-        const popup = new mapboxgl.Popup({
-          closeButton: false,
-          closeOnClick: false
-        })
-        .setLngLat([incident.longitude, incident.latitude])
-        .setHTML(`
-          <div class="p-2 cursor-pointer">
-            <h4 class="font-semibold text-red-600 text-xs">${incident.title || incident.category}</h4>
-            <p class="text-xs text-gray-600">Reportado recientemente</p>
-          </div>
-        `);
-        
-        // Show popup on hover over incident markers
-        // This is a simpler approach that avoids TypeScript issues
-      });
-    }
-
-  }, [recentIncidents, heatmapData]);
 
   const goToUserLocation = () => {
     if (navigator.geolocation) {
@@ -282,28 +154,50 @@ const Map = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Loading and error states
+  if (tokenLoading) {
+    return (
+      <div className="relative w-full h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Cargando mapa...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (tokenError) {
+    return (
+      <div className="relative w-full h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive mb-2">Error al cargar el mapa</p>
+          <p className="text-sm text-muted-foreground">{tokenError}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-screen">
-      {/* Search Bar */}
-      <div className="absolute top-4 left-4 right-4 z-10">
-        <Input
-          type="text"
-          placeholder="Buscar ubicación..."
-          className="bg-background/90 backdrop-blur-sm border-border/50"
-        />
-      </div>
-
       {/* Map Container */}
       <div ref={mapContainer} className="absolute inset-0" />
-
-      {/* Location Button */}
-      <Button
-        onClick={goToUserLocation}
-        className="absolute bottom-20 right-4 z-10 rounded-full w-12 h-12 p-0"
-        variant="secondary"
-      >
-        <Navigation className="w-5 h-5" />
-      </Button>
+      
+      {/* Map Controls */}
+      <MapControls onLocationClick={goToUserLocation} />
+      
+      {/* Map Layers */}
+      <MapLayers 
+        map={map.current} 
+        heatmapData={heatmapData} 
+        recentIncidents={recentIncidents} 
+      />
+      
+      {/* Map Markers */}
+      <MapMarkers 
+        map={map.current} 
+        safetyMarkers={safetyMarkers} 
+        onMarkerClick={setSelectedMarker} 
+      />
 
       {/* Safety Information Panel */}
       {selectedMarker && (

@@ -71,3 +71,6 @@ backend = "postgres"
 
 [functions.calculate-heatmap]
 verify_jwt = false
+
+[functions.get-mapbox-token]
+verify_jwt = false
