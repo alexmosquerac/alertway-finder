@@ -148,10 +148,53 @@ const Map = () => {
     }
   };
 
-  // Refresh map data every 30 seconds
+  // Set up real-time updates for incidents
   useEffect(() => {
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'incident_reports'
+        },
+        (payload) => {
+          console.log('New incident:', payload);
+          // Add new incident to the map in real-time
+          if (payload.new && payload.new.is_verified) {
+            setRecentIncidents(prev => [...prev, payload.new]);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'incident_reports'
+        },
+        (payload) => {
+          console.log('Updated incident:', payload);
+          // Update incident if it becomes verified
+          if (payload.new && payload.new.is_verified) {
+            setRecentIncidents(prev => 
+              prev.map(incident => 
+                incident.id === payload.new.id ? payload.new : incident
+              )
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    // Refresh map data every 30 seconds as backup
     const interval = setInterval(loadMapData, 30000);
-    return () => clearInterval(interval);
+    
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(interval);
+    };
   }, []);
 
   // Loading and error states

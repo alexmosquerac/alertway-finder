@@ -4,14 +4,21 @@ import MainLayout from "@/layouts/MainLayout";
 import Map from "@/components/Map";
 import SafetyAlert from "@/components/SafetyAlert";
 import ReportIncident from "@/components/ReportIncident";
-import { AlertTriangle, Bell, LogIn } from "lucide-react";
+import { AlertTriangle, Bell, LogIn, Settings, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Index = () => {
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   
   return (
     <MainLayout>
@@ -32,9 +39,31 @@ const Index = () => {
                 Iniciar Sesión
               </Link>
             ) : (
-              <button className="text-xs font-medium text-primary">
-                Configuración
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-auto p-1">
+                    <User className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center gap-2">
+                      <User className="w-4 h-4" />
+                      Perfil
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/settings" className="flex items-center gap-2">
+                      <Settings className="w-4 h-4" />
+                      Configuración
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogIn className="w-4 h-4" />
+                    Cerrar Sesión
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </div>
