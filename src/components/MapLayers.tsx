@@ -5,9 +5,10 @@ interface MapLayersProps {
   map: mapboxgl.Map | null;
   heatmapData: any[];
   recentIncidents: any[];
+  onIncidentClick?: (incident: any) => void;
 }
 
-const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents }) => {
+const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents, onIncidentClick }) => {
   // Update heatmap data
   useEffect(() => {
     if (!map || !map.isStyleLoaded()) return;
@@ -59,6 +60,42 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
       });
     }
   }, [map, recentIncidents]);
+
+  // Add click handlers for incidents
+  useEffect(() => {
+    if (!map || !map.isStyleLoaded()) return;
+
+    const handleIncidentClick = (e: any) => {
+      if (e.features && e.features.length > 0 && onIncidentClick) {
+        const incident = recentIncidents.find(inc => inc.id === e.features[0].properties.id);
+        if (incident) {
+          onIncidentClick(incident);
+        }
+      }
+    };
+
+    // Add click event to incidents layer
+    map.on('click', 'incidents-layer', handleIncidentClick);
+    
+    // Change cursor on hover
+    map.on('mouseenter', 'incidents-layer', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+    
+    map.on('mouseleave', 'incidents-layer', () => {
+      map.getCanvas().style.cursor = '';
+    });
+
+    return () => {
+      map.off('click', 'incidents-layer', handleIncidentClick);
+      map.off('mouseenter', 'incidents-layer', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      map.off('mouseleave', 'incidents-layer', () => {
+        map.getCanvas().style.cursor = '';
+      });
+    };
+  }, [map, recentIncidents, onIncidentClick]);
 
   return null;
 };

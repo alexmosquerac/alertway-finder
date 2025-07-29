@@ -19,6 +19,7 @@ const Map = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
+  const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [recentIncidents, setRecentIncidents] = useState<any[]>([]);
   const [heatmapData, setHeatmapData] = useState<any[]>([]);
   const { token: mapboxToken, loading: tokenLoading, error: tokenError } = useMapbox();
@@ -26,13 +27,12 @@ const Map = () => {
   // Load recent incidents and heatmap data
   const loadMapData = async () => {
     try {
-      // Load recent incidents (last 15 minutes)
-      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+      // Load recent incidents (last 4 hours)
+      const fourHoursAgo = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString();
       const { data: incidents } = await supabase
         .from('incident_reports')
         .select('*')
-        .gte('incident_time', fifteenMinutesAgo)
-        .eq('is_verified', true);
+        .gte('incident_time', fourHoursAgo);
 
       setRecentIncidents(incidents || []);
 
@@ -162,7 +162,7 @@ const Map = () => {
         (payload) => {
           console.log('New incident:', payload);
           // Add new incident to the map in real-time
-          if (payload.new && payload.new.is_verified) {
+          if (payload.new) {
             setRecentIncidents(prev => [...prev, payload.new]);
           }
         }
@@ -176,8 +176,8 @@ const Map = () => {
         },
         (payload) => {
           console.log('Updated incident:', payload);
-          // Update incident if it becomes verified
-          if (payload.new && payload.new.is_verified) {
+          // Update incident in real-time
+          if (payload.new) {
             setRecentIncidents(prev => 
               prev.map(incident => 
                 incident.id === payload.new.id ? payload.new : incident
@@ -233,6 +233,7 @@ const Map = () => {
         map={map.current} 
         heatmapData={heatmapData} 
         recentIncidents={recentIncidents} 
+        onIncidentClick={setSelectedIncident}
       />
       
       {/* Map Markers */}
@@ -280,6 +281,44 @@ const Map = () => {
                   ? 'Se recomienda precaución en esta zona.'
                   : 'Esta zona tiene reportes de actividad peligrosa. Evitar si es posible.'}
               </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Incident Information Panel */}
+      {selectedIncident && (
+        <Card className="absolute bottom-4 left-4 right-4 z-10 bg-background/95 backdrop-blur-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-red-500" />
+                <h3 className="font-semibold">{selectedIncident.title || 'Reporte de Incidente'}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedIncident(null)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-2">
+              <Badge variant="destructive">
+                {selectedIncident.category || 'Incidente'}
+              </Badge>
+              {selectedIncident.description && (
+                <p className="text-sm text-muted-foreground">
+                  {selectedIncident.description}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Reportado: {new Date(selectedIncident.incident_time).toLocaleString()}
+              </p>
+              {selectedIncident.is_verified && (
+                <Badge variant="default" className="text-xs">
+                  Verificado
+                </Badge>
+              )}
             </div>
           </CardContent>
         </Card>
