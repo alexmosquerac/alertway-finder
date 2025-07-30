@@ -8,6 +8,7 @@ import { useMapbox } from '@/hooks/useMapbox';
 import MapControls from './MapControls';
 import MapLayers from './MapLayers';
 import MapMarkers, { SafetyMarker } from './MapMarkers';
+import IncidentPopup from './IncidentPopup';
 
 const safetyMarkers: SafetyMarker[] = [
   { id: 1, lat: 40.4168, lng: -3.7038, level: 'safe', label: 'Centro Madrid' },
@@ -306,94 +307,10 @@ const Map = () => {
 
       {/* Incident Information Panel - Responsive Bubble */}
       {selectedIncident && (
-        <Card className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-sm z-10 bg-card/98 backdrop-blur-md border shadow-elevation-high rounded-2xl">
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-center space-x-2 flex-1 min-w-0">
-                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                  selectedIncident.category === 'theft' ? 'bg-red-500' :
-                  selectedIncident.category === 'assault' ? 'bg-red-600' :
-                  selectedIncident.category === 'harassment' ? 'bg-orange-500' :
-                  selectedIncident.category === 'suspicious' ? 'bg-yellow-500' :
-                  selectedIncident.category === 'vandalism' ? 'bg-purple-500' :
-                  'bg-gray-500'
-                }`} />
-                <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">
-                  {selectedIncident.title || 
-                   (selectedIncident.category === 'theft' ? 'Robo reportado' :
-                    selectedIncident.category === 'assault' ? 'Agresión reportada' :
-                    selectedIncident.category === 'harassment' ? 'Acoso reportado' :
-                    selectedIncident.category === 'suspicious' ? 'Actividad sospechosa' :
-                    selectedIncident.category === 'vandalism' ? 'Vandalismo reportado' :
-                    'Incidente reportado')}
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedIncident(null)}
-                className="text-muted-foreground hover:text-foreground transition-colors p-1 flex-shrink-0"
-                aria-label="Cerrar"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-2">
-                <Badge 
-                  variant={selectedIncident.is_verified ? 'default' : 'secondary'}
-                  className="text-xs font-medium"
-                >
-                  {selectedIncident.category === 'theft' ? 'Robo' :
-                   selectedIncident.category === 'assault' ? 'Agresión' :
-                   selectedIncident.category === 'harassment' ? 'Acoso' :
-                   selectedIncident.category === 'suspicious' ? 'Sospechoso' :
-                   selectedIncident.category === 'vandalism' ? 'Vandalismo' :
-                   'Otro'}
-                </Badge>
-                {selectedIncident.is_verified ? (
-                  <Badge variant="default" className="text-xs bg-green-100 text-green-700 border-green-200">
-                    ✓ Verificado
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-xs">
-                    Pendiente
-                  </Badge>
-                )}
-                <Badge variant="outline" className="text-xs">
-                  {selectedIncident.severity === 'high' ? 'Alta' :
-                   selectedIncident.severity === 'medium' ? 'Media' : 'Baja'} severidad
-                </Badge>
-              </div>
-              
-              {selectedIncident.description && (
-                <div className="bg-muted/30 p-3 rounded-lg">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {selectedIncident.description}
-                  </p>
-                </div>
-              )}
-              
-              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
-                <span className="flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {new Date(selectedIncident.incident_time).toLocaleString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit', 
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
-                </span>
-                <span className="text-xs opacity-75">
-                  #{selectedIncident.id.slice(0, 8)}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <IncidentPopup 
+          incident={selectedIncident} 
+          onClose={() => setSelectedIncident(null)} 
+        />
       )}
     </div>
   );
