@@ -43,8 +43,11 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
       properties: {
         id: incident.id,
         category: incident.category,
+        severity: incident.severity,
         title: incident.title,
-        incident_time: incident.incident_time
+        incident_time: incident.incident_time,
+        description: incident.description,
+        is_verified: incident.is_verified
       },
       geometry: {
         type: 'Point' as const,
@@ -58,6 +61,16 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
         type: 'FeatureCollection',
         features: incidentFeatures
       });
+    }
+
+    // Update layer style based on severity
+    if (map.getLayer('incidents-layer')) {
+      map.setPaintProperty('incidents-layer', 'circle-color', [
+        'case',
+        ['==', ['get', 'severity'], 'high'], '#ef4444', // Rojo para alta gravedad
+        ['==', ['get', 'severity'], 'medium'], '#f59e0b', // Amarillo para media gravedad
+        '#22c55e' // Verde para baja gravedad
+      ]);
     }
   }, [map, recentIncidents]);
 

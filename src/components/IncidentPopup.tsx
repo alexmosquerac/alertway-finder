@@ -19,13 +19,11 @@ const IncidentPopup: React.FC<IncidentPopupProps> = ({ incident, onClose }) => {
     }
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'theft': return 'bg-red-500';
-      case 'assault': return 'bg-red-600';
-      case 'harassment': return 'bg-orange-500';
-      case 'suspicious': return 'bg-yellow-500';
-      case 'vandalism': return 'bg-purple-500';
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'high': return 'bg-red-500';     // Peligro - Rojo
+      case 'medium': return 'bg-yellow-500'; // Precaución - Amarillo  
+      case 'low': return 'bg-green-500';    // Leve - Verde
       default: return 'bg-gray-500';
     }
   };
@@ -40,7 +38,7 @@ const IncidentPopup: React.FC<IncidentPopupProps> = ({ incident, onClose }) => {
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-2 flex-1 min-w-0">
-            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getCategoryColor(incident.category)}`} />
+            <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getSeverityColor(incident.severity)}`} />
             <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">
               {getTitle(incident)}
             </h3>
@@ -73,9 +71,16 @@ const IncidentPopup: React.FC<IncidentPopupProps> = ({ incident, onClose }) => {
                 Pendiente
               </Badge>
             )}
-            <Badge variant="outline" className="text-xs">
-              {incident.severity === 'high' ? 'Alta' :
-               incident.severity === 'medium' ? 'Media' : 'Baja'} severidad
+            <Badge 
+              variant="outline" 
+              className={`text-xs border ${
+                incident.severity === 'high' ? 'border-red-300 text-red-700 bg-red-50 dark:border-red-700 dark:text-red-300 dark:bg-red-950' :
+                incident.severity === 'medium' ? 'border-yellow-300 text-yellow-700 bg-yellow-50 dark:border-yellow-700 dark:text-yellow-300 dark:bg-yellow-950' :
+                'border-green-300 text-green-700 bg-green-50 dark:border-green-700 dark:text-green-300 dark:bg-green-950'
+              }`}
+            >
+              {incident.severity === 'high' ? '🔴 Peligro' :
+               incident.severity === 'medium' ? '🟡 Precaución' : '🟢 Leve'}
             </Badge>
           </div>
           
