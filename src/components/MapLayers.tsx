@@ -63,67 +63,77 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
       });
     }
 
-    // Update layer style based on severity
+    // Update layer style based on severity with better color mapping
     if (map.getLayer('incidents-layer')) {
       map.setPaintProperty('incidents-layer', 'circle-color', [
         'case',
         ['==', ['get', 'severity'], 'high'], '#ef4444', // Rojo para alta gravedad
         ['==', ['get', 'severity'], 'medium'], '#f59e0b', // Amarillo para media gravedad
-        '#22c55e' // Verde para baja gravedad
+        ['==', ['get', 'severity'], 'low'], '#22c55e', // Verde para baja gravedad
+        '#f59e0b' // Default: amarillo para undefined
       ]);
+      
+      // Make circles larger and more visible
+      map.setPaintProperty('incidents-layer', 'circle-radius', [
+        'case',
+        ['==', ['get', 'severity'], 'high'], 10,
+        ['==', ['get', 'severity'], 'medium'], 8,
+        6
+      ]);
+      
+      map.setPaintProperty('incidents-layer', 'circle-stroke-width', 3);
+      map.setPaintProperty('incidents-layer', 'circle-stroke-color', '#ffffff');
     }
   }, [map, recentIncidents]);
 
-  // Add click handlers for incidents
+  // Add click handlers for incidents with better cleanup
   useEffect(() => {
     if (!map || !map.isStyleLoaded() || !onIncidentClick) return;
 
-    const handleIncidentClick = (e: any) => {
-      // Prevent map navigation
-      e.preventDefault();
+    const handleIncidentClick = (e: mapboxgl.MapLayerMouseEvent & { features?: any[] }) => {
+      // Stop event propagation
+      e.originalEvent?.stopPropagation();
       
       if (e.features && e.features.length > 0) {
         const clickedFeature = e.features[0];
-        const incidentId = clickedFeature.properties.id;
+        const incidentId = clickedFeature.properties?.id;
         
         console.log('Clicked incident ID:', incidentId);
-        console.log('Available incidents:', recentIncidents.map(i => i.id));
+        console.log('Available incidents:', recentIncidents.length);
         
         const incident = recentIncidents.find(inc => inc.id === incidentId);
         if (incident) {
-          console.log('Found incident:', incident);
+          console.log('Found incident, showing popup:', incident.description);
           onIncidentClick(incident);
         } else {
-          console.warn('Incident not found:', incidentId);
+          console.warn('Incident not found for ID:', incidentId);
         }
       }
     };
 
     const handleMouseEnter = () => {
-      map.getCanvas().style.cursor = 'pointer';
+      if (map) map.getCanvas().style.cursor = 'pointer';
     };
 
     const handleMouseLeave = () => {
-      map.getCanvas().style.cursor = '';
+      if (map) map.getCanvas().style.cursor = '';
     };
 
-    // Clean up any existing listeners
-    const layerId = 'incidents-layer';
-    if (map.getLayer(layerId)) {
-      // Remove all listeners for this layer
-      const existingListeners = (map as any)._listeners;
-      if (existingListeners && existingListeners[layerId]) {
-        delete existingListeners[layerId];
-      }
+    // Ensure layer exists before adding listeners
+    if (map.getLayer('incidents-layer')) {
+      // Clean up existing listeners first
+      map.off('click', 'incidents-layer', handleIncidentClick);
+      map.off('mouseenter', 'incidents-layer', handleMouseEnter);
+      map.off('mouseleave', 'incidents-layer', handleMouseLeave);
+      
+      // Add fresh listeners
+      map.on('click', 'incidents-layer', handleIncidentClick);
+      map.on('mouseenter', 'incidents-layer', handleMouseEnter);
+      map.on('mouseleave', 'incidents-layer', handleMouseLeave);
     }
 
-    // Add fresh listeners
-    map.on('click', 'incidents-layer', handleIncidentClick);
-    map.on('mouseenter', 'incidents-layer', handleMouseEnter);
-    map.on('mouseleave', 'incidents-layer', handleMouseLeave);
-
     return () => {
-      if (map.getLayer('incidents-layer')) {
+      if (map && map.getLayer('incidents-layer')) {
         map.off('click', 'incidents-layer', handleIncidentClick);
         map.off('mouseenter', 'incidents-layer', handleMouseEnter);
         map.off('mouseleave', 'incidents-layer', handleMouseLeave);

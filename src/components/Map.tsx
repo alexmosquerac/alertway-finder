@@ -65,8 +65,8 @@ const Map = () => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [-3.7038, 40.4168], // Madrid coordinates
-      zoom: 12,
+      center: [2.1320, 41.3909], // Barcelona coordinates - matches incident data
+      zoom: 13,
     });
 
     // Add navigation controls
