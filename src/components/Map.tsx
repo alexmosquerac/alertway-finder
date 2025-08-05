@@ -9,6 +9,7 @@ import MapControls from './MapControls';
 import MapLayers from './MapLayers';
 import MapMarkers, { SafetyMarker } from './MapMarkers';
 import IncidentPopup from './IncidentPopup';
+import CriticalZones from './CriticalZones';
 
 const safetyMarkers: SafetyMarker[] = [
   { id: 1, lat: 40.4168, lng: -3.7038, level: 'safe', label: 'Centro Madrid' },
@@ -253,6 +254,12 @@ const Map = () => {
         heatmapData={heatmapData} 
         recentIncidents={recentIncidents} 
         onIncidentClick={setSelectedIncident}
+      />
+      
+      {/* Critical Zones (Waze-style) */}
+      <CriticalZones 
+        map={map.current} 
+        recentIncidents={recentIncidents} 
       />
       
       {/* Map Markers */}

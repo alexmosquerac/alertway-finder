@@ -76,37 +76,58 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
 
   // Add click handlers for incidents
   useEffect(() => {
-    if (!map || !map.isStyleLoaded()) return;
+    if (!map || !map.isStyleLoaded() || !onIncidentClick) return;
 
     const handleIncidentClick = (e: any) => {
-      if (e.features && e.features.length > 0 && onIncidentClick) {
-        const incident = recentIncidents.find(inc => inc.id === e.features[0].properties.id);
+      // Prevent map navigation
+      e.preventDefault();
+      
+      if (e.features && e.features.length > 0) {
+        const clickedFeature = e.features[0];
+        const incidentId = clickedFeature.properties.id;
+        
+        console.log('Clicked incident ID:', incidentId);
+        console.log('Available incidents:', recentIncidents.map(i => i.id));
+        
+        const incident = recentIncidents.find(inc => inc.id === incidentId);
         if (incident) {
+          console.log('Found incident:', incident);
           onIncidentClick(incident);
+        } else {
+          console.warn('Incident not found:', incidentId);
         }
       }
     };
 
-    // Add click event to incidents layer
-    map.on('click', 'incidents-layer', handleIncidentClick);
-    
-    // Change cursor on hover
-    map.on('mouseenter', 'incidents-layer', () => {
+    const handleMouseEnter = () => {
       map.getCanvas().style.cursor = 'pointer';
-    });
-    
-    map.on('mouseleave', 'incidents-layer', () => {
+    };
+
+    const handleMouseLeave = () => {
       map.getCanvas().style.cursor = '';
-    });
+    };
+
+    // Clean up any existing listeners
+    const layerId = 'incidents-layer';
+    if (map.getLayer(layerId)) {
+      // Remove all listeners for this layer
+      const existingListeners = (map as any)._listeners;
+      if (existingListeners && existingListeners[layerId]) {
+        delete existingListeners[layerId];
+      }
+    }
+
+    // Add fresh listeners
+    map.on('click', 'incidents-layer', handleIncidentClick);
+    map.on('mouseenter', 'incidents-layer', handleMouseEnter);
+    map.on('mouseleave', 'incidents-layer', handleMouseLeave);
 
     return () => {
-      map.off('click', 'incidents-layer', handleIncidentClick);
-      map.off('mouseenter', 'incidents-layer', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      map.off('mouseleave', 'incidents-layer', () => {
-        map.getCanvas().style.cursor = '';
-      });
+      if (map.getLayer('incidents-layer')) {
+        map.off('click', 'incidents-layer', handleIncidentClick);
+        map.off('mouseenter', 'incidents-layer', handleMouseEnter);
+        map.off('mouseleave', 'incidents-layer', handleMouseLeave);
+      }
     };
   }, [map, recentIncidents, onIncidentClick]);
 
