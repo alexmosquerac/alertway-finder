@@ -19,38 +19,37 @@ export const useGeolocation = () => {
   });
 
   const getCurrentPosition = (): Promise<Position> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocalización no está soportada por este navegador'));
+        // Si no hay geolocalización, usar Barcelona como ubicación por defecto
+        console.log('Geolocation not available, using Barcelona as fallback');
+        resolve({
+          latitude: 41.3909,
+          longitude: 2.1320
+        });
         return;
       }
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log('Real geolocation detected:', position.coords.latitude, position.coords.longitude);
           resolve({
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
           });
         },
         (error) => {
-          let message = 'Error desconocido obteniendo ubicación';
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              message = 'Permiso de ubicación denegado';
-              break;
-            case error.POSITION_UNAVAILABLE:
-              message = 'Ubicación no disponible';
-              break;
-            case error.TIMEOUT:
-              message = 'Tiempo de espera agotado para obtener ubicación';
-              break;
-          }
-          reject(new Error(message));
+          console.warn('Geolocation error, using Barcelona as fallback:', error.message);
+          // En caso de error, usar Barcelona como fallback
+          resolve({
+            latitude: 41.3909,
+            longitude: 2.1320
+          });
         },
         {
           enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 30000 // Reducir cache para mejor precisión
+          timeout: 10000, // Reducir timeout para fallback más rápido
+          maximumAge: 60000 // Aumentar cache para evitar consultas repetidas
         }
       );
     });
@@ -66,8 +65,12 @@ export const useGeolocation = () => {
         });
       })
       .catch((error) => {
+        // Esto ya no debería suceder, pero por seguridad
         setLocation({
-          position: null,
+          position: {
+            latitude: 41.3909,
+            longitude: 2.1320
+          },
           loading: false,
           error: error.message
         });

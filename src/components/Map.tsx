@@ -10,8 +10,9 @@ import MapLayers from './MapLayers';
 import MapMarkers, { SafetyMarker } from './MapMarkers';
 import IncidentPopup from './IncidentPopup';
 import CriticalZones from './CriticalZones';
+import MapDebugInfo from './MapDebugInfo';
 
-// Datos de prueba para incidentes (Barcelona) - para testing
+// Datos de prueba para incidentes (Barcelona) - para testing inicial
 const testIncidents = [
   {
     id: 'test-1',
@@ -46,9 +47,9 @@ const testIncidents = [
 ];
 
 const safetyMarkers: SafetyMarker[] = [
-  { id: 1, lat: 40.4168, lng: -3.7038, level: 'safe', label: 'Centro Madrid' },
-  { id: 2, lat: 40.4200, lng: -3.7050, level: 'caution', label: 'Zona Norte' },
-  { id: 3, lat: 40.4150, lng: -3.7020, level: 'danger', label: 'Zona Sur' },
+  { id: 1, lat: 41.3870, lng: 2.1700, level: 'safe', label: 'Plaza Catalunya' },
+  { id: 2, lat: 41.3826, lng: 2.1769, level: 'caution', label: 'Barrio Gótico' },
+  { id: 3, lat: 41.3803, lng: 2.1751, level: 'danger', label: 'Las Ramblas' },
 ];
 
 const Map = () => {
@@ -79,6 +80,24 @@ const Map = () => {
       const allIncidents = [...(incidents || []), ...testIncidents];
       setRecentIncidents(allIncidents);
       console.log('Loaded incidents:', allIncidents.length, 'incidents');
+      
+      // Auto-centrar mapa si hay incidentes reales
+      if (incidents && incidents.length > 0) {
+        const latitudes = incidents.map(i => i.latitude);
+        const longitudes = incidents.map(i => i.longitude);
+        const centerLat = latitudes.reduce((a, b) => a + b, 0) / latitudes.length;
+        const centerLng = longitudes.reduce((a, b) => a + b, 0) / longitudes.length;
+        
+        console.log('Auto-centering map to:', centerLat, centerLng);
+        
+        if (map.current) {
+          map.current.flyTo({
+            center: [centerLng, centerLat],
+            zoom: 13,
+            duration: 2000
+          });
+        }
+      }
 
       // Load heatmap data
       const { data: heatmap } = await supabase
@@ -304,6 +323,9 @@ const Map = () => {
         safetyMarkers={safetyMarkers} 
         onMarkerClick={setSelectedMarker} 
       />
+
+      {/* Debug Info */}
+      <MapDebugInfo recentIncidents={recentIncidents} map={map.current} />
 
       {/* Safety Information Panel */}
       {selectedMarker && (

@@ -103,6 +103,8 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
         
         if (!props) return;
 
+        console.log('Clicked incident feature:', props);
+
         // Create popup content
         const getSeverityColor = (severity: string) => {
           switch (severity) {
@@ -134,7 +136,7 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
         };
 
         const popupContent = `
-          <div style="max-width: 300px; font-family: system-ui, -apple-system, sans-serif;">
+          <div style="max-width: 300px; font-family: system-ui, -apple-system, sans-serif; padding: 16px;">
             <div style="display: flex; align-items: center; margin-bottom: 12px; gap: 8px;">
               <div style="width: 12px; height: 12px; border-radius: 50%; background-color: ${getSeverityColor(props.severity)}; flex-shrink: 0;"></div>
               <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #1f2937;">${getCategoryLabel(props.category)}</h3>
@@ -186,11 +188,21 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
       if (map) map.getCanvas().style.cursor = '';
     };
 
-    // Add event listeners
+    // Add event listeners with better error handling
     if (map.getLayer('incidents-layer')) {
+      // Clean up existing listeners first
+      map.off('click', 'incidents-layer', handleIncidentClick);
+      map.off('mouseenter', 'incidents-layer', handleMouseEnter);
+      map.off('mouseleave', 'incidents-layer', handleMouseLeave);
+      
+      // Add fresh listeners
       map.on('click', 'incidents-layer', handleIncidentClick);
       map.on('mouseenter', 'incidents-layer', handleMouseEnter);
       map.on('mouseleave', 'incidents-layer', handleMouseLeave);
+      
+      console.log('Event listeners attached to incidents layer');
+    } else {
+      console.warn('incidents-layer not found, cannot attach click handlers');
     }
 
     return () => {
