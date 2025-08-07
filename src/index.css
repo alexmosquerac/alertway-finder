@@ -137,4 +137,42 @@
       opacity: 1;
     }
   }
+  
+  /* Estilos para popups nativos de Mapbox */
+  .mapboxgl-popup-content {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    padding: 0 !important;
+    max-width: 320px !important;
+  }
+
+  .mapboxgl-popup-close-button {
+    font-size: 24px !important;
+    color: #6b7280 !important;
+    padding: 8px !important;
+    right: 8px !important;
+    top: 8px !important;
+  }
+
+  .mapboxgl-popup-close-button:hover {
+    color: #374151 !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    border-radius: 50% !important;
+  }
+
+  .mapboxgl-popup-tip {
+    border-top-color: white !important;
+  }
+
+  /* Responsive para móvil */
+  @media (max-width: 640px) {
+    .mapboxgl-popup-content {
+      max-width: calc(100vw - 40px) !important;
+      margin: 0 10px !important;
+    }
+    
+    .incident-popup .mapboxgl-popup-content {
+      font-size: 14px !important;
+    }
+  }
 }

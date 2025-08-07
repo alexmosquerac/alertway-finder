@@ -11,6 +11,40 @@ import MapMarkers, { SafetyMarker } from './MapMarkers';
 import IncidentPopup from './IncidentPopup';
 import CriticalZones from './CriticalZones';
 
+// Datos de prueba para incidentes (Barcelona) - para testing
+const testIncidents = [
+  {
+    id: 'test-1',
+    category: 'theft',
+    severity: 'high',
+    description: 'Reporte de robo en Plaza Catalunya. Varios testigos confirmaron el incidente.',
+    latitude: 41.3870,
+    longitude: 2.1700,
+    incident_time: new Date().toISOString(),
+    is_verified: false
+  },
+  {
+    id: 'test-2', 
+    category: 'suspicious',
+    severity: 'medium',
+    description: 'Actividad sospechosa reportada cerca del Barrio Gótico.',
+    latitude: 41.3826,
+    longitude: 2.1769,
+    incident_time: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    is_verified: true
+  },
+  {
+    id: 'test-3',
+    category: 'harassment', 
+    severity: 'low',
+    description: 'Reporte de acoso menor en Las Ramblas.',
+    latitude: 41.3803,
+    longitude: 2.1751,
+    incident_time: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    is_verified: true
+  }
+];
+
 const safetyMarkers: SafetyMarker[] = [
   { id: 1, lat: 40.4168, lng: -3.7038, level: 'safe', label: 'Centro Madrid' },
   { id: 2, lat: 40.4200, lng: -3.7050, level: 'caution', label: 'Zona Norte' },
@@ -41,8 +75,10 @@ const Map = () => {
         console.error('Error loading incidents:', incidentsError);
       }
 
-      setRecentIncidents(incidents || []);
-      console.log('Loaded incidents:', incidents);
+      // Combinar incidentes reales con datos de prueba para testing
+      const allIncidents = [...(incidents || []), ...testIncidents];
+      setRecentIncidents(allIncidents);
+      console.log('Loaded incidents:', allIncidents.length, 'incidents');
 
       // Load heatmap data
       const { data: heatmap } = await supabase

@@ -86,28 +86,95 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
     }
   }, [map, recentIncidents]);
 
-  // Add click handlers for incidents with better cleanup
+  // Add click handlers using native Mapbox popups for better reliability
   useEffect(() => {
-    if (!map || !map.isStyleLoaded() || !onIncidentClick) return;
+    if (!map || !map.isStyleLoaded()) return;
+
+    // Remove existing popups
+    const existingPopups = document.querySelectorAll('.mapboxgl-popup');
+    existingPopups.forEach(popup => popup.remove());
 
     const handleIncidentClick = (e: mapboxgl.MapLayerMouseEvent & { features?: any[] }) => {
-      // Stop event propagation
-      e.originalEvent?.stopPropagation();
+      e.preventDefault();
       
       if (e.features && e.features.length > 0) {
-        const clickedFeature = e.features[0];
-        const incidentId = clickedFeature.properties?.id;
+        const feature = e.features[0];
+        const props = feature.properties;
         
-        console.log('Clicked incident ID:', incidentId);
-        console.log('Available incidents:', recentIncidents.length);
-        
-        const incident = recentIncidents.find(inc => inc.id === incidentId);
-        if (incident) {
-          console.log('Found incident, showing popup:', incident.description);
-          onIncidentClick(incident);
-        } else {
-          console.warn('Incident not found for ID:', incidentId);
-        }
+        if (!props) return;
+
+        // Create popup content
+        const getSeverityColor = (severity: string) => {
+          switch (severity) {
+            case 'high': return '#ef4444';
+            case 'medium': return '#f59e0b'; 
+            case 'low': return '#22c55e';
+            default: return '#6b7280';
+          }
+        };
+
+        const getSeverityLabel = (severity: string) => {
+          switch (severity) {
+            case 'high': return '🔴 Peligro';
+            case 'medium': return '🟡 Precaución';
+            case 'low': return '🟢 Leve';
+            default: return '⚫ Desconocido';
+          }
+        };
+
+        const getCategoryLabel = (category: string) => {
+          switch (category) {
+            case 'theft': return 'Robo';
+            case 'assault': return 'Agresión';
+            case 'harassment': return 'Acoso';
+            case 'suspicious': return 'Sospechoso';
+            case 'vandalism': return 'Vandalismo';
+            default: return 'Otro';
+          }
+        };
+
+        const popupContent = `
+          <div style="max-width: 300px; font-family: system-ui, -apple-system, sans-serif;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px; gap: 8px;">
+              <div style="width: 12px; height: 12px; border-radius: 50%; background-color: ${getSeverityColor(props.severity)}; flex-shrink: 0;"></div>
+              <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: #1f2937;">${getCategoryLabel(props.category)}</h3>
+            </div>
+            
+            <div style="background-color: #f3f4f6; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; font-size: 14px; font-weight: 500; color: #374151;">
+              ${getSeverityLabel(props.severity)}
+            </div>
+            
+            <p style="margin: 0 0 12px 0; font-size: 14px; line-height: 1.5; color: #4b5563; background-color: #f9fafb; padding: 12px; border-radius: 8px;">
+              ${props.description || 'Sin descripción disponible'}
+            </p>
+            
+            <div style="font-size: 12px; color: #6b7280; background-color: #f3f4f6; padding: 8px; border-radius: 6px;">
+              <div style="margin-bottom: 4px;">
+                📅 ${new Date(props.incident_time).toLocaleString('es-ES', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+              ${!props.is_verified ? '<div style="color: #ea580c; font-weight: 500;">⚠️ Pendiente de verificación</div>' : ''}
+            </div>
+          </div>
+        `;
+
+        // Create and show popup
+        const popup = new mapboxgl.Popup({
+          closeButton: true,
+          closeOnClick: false,
+          maxWidth: '320px',
+          className: 'incident-popup'
+        })
+          .setLngLat(e.lngLat)
+          .setHTML(popupContent)
+          .addTo(map);
+
+        console.log('Native popup created for incident:', props.category);
       }
     };
 
@@ -119,14 +186,8 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
       if (map) map.getCanvas().style.cursor = '';
     };
 
-    // Ensure layer exists before adding listeners
+    // Add event listeners
     if (map.getLayer('incidents-layer')) {
-      // Clean up existing listeners first
-      map.off('click', 'incidents-layer', handleIncidentClick);
-      map.off('mouseenter', 'incidents-layer', handleMouseEnter);
-      map.off('mouseleave', 'incidents-layer', handleMouseLeave);
-      
-      // Add fresh listeners
       map.on('click', 'incidents-layer', handleIncidentClick);
       map.on('mouseenter', 'incidents-layer', handleMouseEnter);
       map.on('mouseleave', 'incidents-layer', handleMouseLeave);
@@ -139,7 +200,7 @@ const MapLayers: React.FC<MapLayersProps> = ({ map, heatmapData, recentIncidents
         map.off('mouseleave', 'incidents-layer', handleMouseLeave);
       }
     };
-  }, [map, recentIncidents, onIncidentClick]);
+  }, [map, recentIncidents]);
 
   return null;
 };
